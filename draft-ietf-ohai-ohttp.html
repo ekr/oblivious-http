@@ -1202,6 +1202,11 @@ from the same client.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.4">
                 <p id="section-toc.1-1.8.2.4.1"><a href="#section-8.4" class="xref">8.4</a>.  <a href="#name-replay-attacks" class="xref">Replay Attacks</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.4.2.1">
+                    <p id="section-toc.1-1.8.2.4.2.1.1"><a href="#section-8.4.1" class="xref">8.4.1</a>.  <a href="#name-use-of-date-for-anti-replay" class="xref">Use of Date for Anti-Replay</a></p>
+</li>
+                </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.5">
                 <p id="section-toc.1-1.8.2.5.1"><a href="#section-8.5" class="xref">8.5</a>.  <a href="#name-post-compromise-security" class="xref">Post-Compromise Security</a></p>
@@ -1364,8 +1369,8 @@ information about oblivious target resources that the oblivious request
 resource supports.<a href="#section-3-2.1" class="pilcrow">¶</a>
 </li>
         <li class="normal" id="section-3-2.2">The details of an HPKE public key that the oblivious request resource accepts,
-including an identifier for that key and the HPKE algorithms that are
-used with that key.<a href="#section-3-2.2" class="pilcrow">¶</a>
+including an identifier for that key and the HPKE algorithms that are used
+with that key.<a href="#section-3-2.2" class="pilcrow">¶</a>
 </li>
         <li class="normal" id="section-3-2.3">The identity of an oblivious proxy resource that will forward encapsulated
 requests and responses to a single oblivious request resource. See <a href="#proxy-state" class="xref">Section 10.2</a>
@@ -1487,7 +1492,8 @@ requires that applications not carry state between requests.<a href="#section-3.
 stateful treatment of requests are sufficiently negative that the cost of
 deploying this protocol can be justified.  Oblivious HTTP is simpler and less
 costly than more robust systems, like Prio (<span>[<a href="#PRIO" class="xref">PRIO</a>]</span>) or Tor
-(<span>[<a href="#Dingledine2004" class="xref">Dingledine2004</a>]</span>), which can provide stronger guarantees at higher operational costs.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+(<span>[<a href="#Dingledine2004" class="xref">Dingledine2004</a>]</span>), which can provide stronger guarantees at higher
+operational costs.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
 <p id="section-3.1-3">Oblivious HTTP is more costly than a direct connection to a server.  Some costs,
 like those involved with connection setup, can be amortized, but there are
 several ways in which oblivious HTTP is more expensive than a direct request:<a href="#section-3.1-3" class="pilcrow">¶</a></p>
@@ -1726,17 +1732,30 @@ Change controller:  </dt>
       <h2 id="name-hpke-encapsulation">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-hpke-encapsulation" class="section-name selfRef">HPKE Encapsulation</a>
       </h2>
-<p id="section-5-1">HTTP message encapsulation uses HPKE for request and response encryption.  An
-encapsulated HTTP message includes a binary-encoded HTTP message and no other
-content; see <span>[<a href="#BINARY" class="xref">BINARY</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
-<p id="section-5-2">An Encapsulated Request is comprised of a length-prefixed key identifier and a
-HPKE-protected request message. HPKE protection includes an encapsulated KEM
-shared secret (or <code>enc</code>), plus the AEAD-protected request message. An
-Encapsulated Request is shown in <a href="#fig-enc-request" class="xref">Figure 3</a>. <a href="#request" class="xref">Section 5.1</a> describes the
-process for constructing and processing an Encapsulated Request.<a href="#section-5-2" class="pilcrow">¶</a></p>
-<span id="name-encapsulated-request"></span><div id="fig-enc-request">
+<p id="section-5-1">HTTP message encapsulation uses HPKE for request and response encryption.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">An encapsulated HTTP request contains a binary-encoded HTTP message <span>[<a href="#BINARY" class="xref">BINARY</a>]</span>
+and no other fields; see <a href="#fig-req-pt" class="xref">Figure 3</a>.<a href="#section-5-2" class="pilcrow">¶</a></p>
+<span id="name-plaintext-request-content"></span><div id="fig-req-pt">
 <figure id="figure-3">
         <div class="alignLeft art-text artwork" id="section-5-3.1">
+<pre>
+Request {
+  Binary HTTP Message (..),
+}
+</pre>
+</div>
+<figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
+<a href="#name-plaintext-request-content" class="selfRef">Plaintext Request Content</a>
+        </figcaption></figure>
+</div>
+<p id="section-5-4">An Encapsulated Request is comprised of a length-prefixed key identifier and a
+HPKE-protected request message. HPKE protection includes an encapsulated KEM
+shared secret (or <code>enc</code>), plus the AEAD-protected request message. An
+Encapsulated Request is shown in <a href="#fig-enc-request" class="xref">Figure 4</a>. <a href="#request" class="xref">Section 5.1</a> describes the
+process for constructing and processing an Encapsulated Request.<a href="#section-5-4" class="pilcrow">¶</a></p>
+<span id="name-encapsulated-request"></span><div id="fig-enc-request">
+<figure id="figure-4">
+        <div class="alignLeft art-text artwork" id="section-5-5.1">
 <pre>
 Encapsulated Request {
   Key Identifier (8),
@@ -1748,16 +1767,32 @@ Encapsulated Request {
 }
 </pre>
 </div>
-<figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
+<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
 <a href="#name-encapsulated-request" class="selfRef">Encapsulated Request</a>
         </figcaption></figure>
 </div>
-<p id="section-5-4">Responses are bound to responses and so consist only of AEAD-protected content.
+<p id="section-5-6">The Nenc parameter corresponding to the HpkeKdfId can be found in <span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hpke-12#section-7.1" class="relref">Section 7.1</a> of [<a href="#HPKE" class="xref">HPKE</a>]</span>.<a href="#section-5-6" class="pilcrow">¶</a></p>
+<p id="section-5-7">An encapsulated HTTP response includes a binary-encoded HTTP message <span>[<a href="#BINARY" class="xref">BINARY</a>]</span>
+and no other content; see <a href="#fig-res-pt" class="xref">Figure 5</a>.<a href="#section-5-7" class="pilcrow">¶</a></p>
+<span id="name-plaintext-response-content"></span><div id="fig-res-pt">
+<figure id="figure-5">
+        <div class="alignLeft art-text artwork" id="section-5-8.1">
+<pre>
+Response {
+  Binary HTTP Message (..),
+}
+</pre>
+</div>
+<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
+<a href="#name-plaintext-response-content" class="selfRef">Plaintext Response Content</a>
+        </figcaption></figure>
+</div>
+<p id="section-5-9">Responses are bound to responses and so consist only of AEAD-protected content.
 <a href="#response" class="xref">Section 5.2</a> describes the process for constructing and processing an
-Encapsulated Response.<a href="#section-5-4" class="pilcrow">¶</a></p>
+Encapsulated Response.<a href="#section-5-9" class="pilcrow">¶</a></p>
 <span id="name-encapsulated-response"></span><div id="fig-enc-response">
-<figure id="figure-4">
-        <div class="alignLeft art-text artwork" id="section-5-5.1">
+<figure id="figure-6">
+        <div class="alignLeft art-text artwork" id="section-5-10.1">
 <pre>
 Encapsulated Response {
   Nonce (Nk),
@@ -1765,13 +1800,13 @@ Encapsulated Response {
 }
 </pre>
 </div>
-<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
+<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
 <a href="#name-encapsulated-response" class="selfRef">Encapsulated Response</a>
         </figcaption></figure>
 </div>
-<p id="section-5-6">The Nenc and Nk parameters corresponding to the HpkeKdfId can be found in
+<p id="section-5-11">The Nenc and Nk parameters corresponding to the HpkeKdfId can be found in
 <span>[<a href="#HPKE" class="xref">HPKE</a>]</span>.  Nenc refers to the size of the encapsulated KEM shared secret, in
-bytes; Nk refers to the size of the AEAD key for the HPKE ciphersuite, in bits.<a href="#section-5-6" class="pilcrow">¶</a></p>
+bytes; Nk refers to the size of the AEAD key for the HPKE ciphersuite, in bits.<a href="#section-5-11" class="pilcrow">¶</a></p>
 <div id="request">
 <section id="section-5.1">
         <h3 id="name-encapsulation-of-requests">
@@ -1788,10 +1823,11 @@ identified by <code>kemID</code>,<a href="#section-5.1-2.1" class="pilcrow">¶</
 <code>aeadID</code>.<a href="#section-5.1-2.3" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-5.1-3">The client then constructs an encapsulated request, <code>enc_request</code>, as follows:<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.1-3">The client then constructs an encapsulated request, <code>enc_request</code>, from a binary
+encoded HTTP request, <code>request</code>, as follows:<a href="#section-5.1-3" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.1-4">
-<li id="section-5.1-4.1">Compute an HPKE context using <code>pkR</code> and a label of "message/bhttp request", yielding
-<code>context</code> and encapsulation key <code>enc</code>.<a href="#section-5.1-4.1" class="pilcrow">¶</a>
+<li id="section-5.1-4.1">Compute an HPKE context using <code>pkR</code> and a label of "message/bhttp request",
+yielding <code>context</code> and encapsulation key <code>enc</code>.<a href="#section-5.1-4.1" class="pilcrow">¶</a>
 </li>
           <li id="section-5.1-4.2">Construct associated data, <code>aad</code>, by concatenating the values of <code>keyID</code>,
 <code>kemID</code>, <code>kdfID</code>, and <code>aeadID</code>, as one 8-bit integer and three 16-bit
@@ -1822,18 +1858,18 @@ enc_request = concat(aad, enc, ct)
 Encapsulated Request <code>enc_request</code>, a server:<a href="#section-5.1-8" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.1-9">
 <li id="section-5.1-9.1">
-            <p id="section-5.1-9.1.1">Parses <code>enc_request</code> into <code>keyID</code>, <code>kemID</code>, <code>kdfID</code>, <code>aeadID</code>, <code>enc</code>, and <code>ct</code>
-(indicated using the function <code>parse()</code> in pseudocode). The server is then
-able to find the HPKE private key, <code>skR</code>, corresponding to <code>keyID</code>.<a href="#section-5.1-9.1.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-9.1.1">Parses <code>enc_request</code> into <code>keyID</code>, <code>kemID</code>, <code>kdfID</code>, <code>aeadID</code>, <code>enc</code>, and
+<code>ct</code> (indicated using the function <code>parse()</code> in pseudocode). The server is
+then able to find the HPKE private key, <code>skR</code>, corresponding to <code>keyID</code>.<a href="#section-5.1-9.1.1" class="pilcrow">¶</a></p>
 <p id="section-5.1-9.1.2">
-a. If <code>keyID</code> does not identify a key matching the type of <code>kemID</code>, the server
-   returns an error.<a href="#section-5.1-9.1.2" class="pilcrow">¶</a></p>
+a. If <code>keyID</code> does not identify a key matching the type of <code>kemID</code>, the
+   server returns an error.<a href="#section-5.1-9.1.2" class="pilcrow">¶</a></p>
 <p id="section-5.1-9.1.3">
 b. If <code>kdfID</code> and <code>aeadID</code> identify a combination of KDF and AEAD that the
    server is unwilling to use with <code>skR</code>, the server returns an error.<a href="#section-5.1-9.1.3" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-5.1-9.2">Compute an HPKE context using <code>skR</code>, a label of "message/bhttp request", and the
-encapsulated key <code>enc</code>, yielding <code>context</code>.<a href="#section-5.1-9.2" class="pilcrow">¶</a>
+          <li id="section-5.1-9.2">Compute an HPKE context using <code>skR</code>, a label of "message/bhttp request", and
+the encapsulated key <code>enc</code>, yielding <code>context</code>.<a href="#section-5.1-9.2" class="pilcrow">¶</a>
 </li>
           <li id="section-5.1-9.3">Construct additional associated data, <code>aad</code>, from <code>keyID</code>, <code>kemID</code>, <code>kdfID</code>,
 and <code>aeadID</code> or as the first seven bytes of <code>enc_request</code>.<a href="#section-5.1-9.3" class="pilcrow">¶</a>
@@ -1865,11 +1901,12 @@ request, error = context.Open(aad, ct)
 <code>response</code>, servers generate an Encapsulated Response <code>enc_response</code> as
 follows:<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.2-2">
-<li id="section-5.2-2.1">Export a secret <code>secret</code> from <code>context</code>, using the string "message/bhttp response" as
-context.  The length of this secret is <code>max(Nn, Nk)</code>, where <code>Nn</code> and <code>Nk</code> are
-the length of AEAD key and nonce associated with <code>context</code>.<a href="#section-5.2-2.1" class="pilcrow">¶</a>
+<li id="section-5.2-2.1">Export a secret <code>secret</code> from <code>context</code>, using the string "message/bhttp
+response" as context.  The length of this secret is <code>max(Nn, Nk)</code>, where <code>Nn</code>
+and <code>Nk</code> are the length of AEAD key and nonce associated with <code>context</code>.<a href="#section-5.2-2.1" class="pilcrow">¶</a>
 </li>
-          <li id="section-5.2-2.2">Generate a random value of length <code>max(Nn, Nk)</code> bytes, called <code>response_nonce</code>.<a href="#section-5.2-2.2" class="pilcrow">¶</a>
+          <li id="section-5.2-2.2">Generate a random value of length <code>max(Nn, Nk)</code> bytes, called
+<code>response_nonce</code>.<a href="#section-5.2-2.2" class="pilcrow">¶</a>
 </li>
           <li id="section-5.2-2.3">Extract a pseudorandom key <code>prk</code> using the <code>Extract</code> function provided by
 the KDF algorithm associated with <code>context</code>. The <code>ikm</code> input to this
@@ -2297,8 +2334,8 @@ plaintext request and response.<a href="#section-8-8.1" class="pilcrow">¶</a>
 per-client keys.<a href="#section-8-8.2" class="pilcrow">¶</a>
 </li>
       </ol>
-<p id="section-8-9">Traffic analysis that might affect these properties are outside the scope of this
-document; see <a href="#ta" class="xref">Section 8.2.2</a>.<a href="#section-8-9" class="pilcrow">¶</a></p>
+<p id="section-8-9">Traffic analysis that might affect these properties are outside the scope of
+this document; see <a href="#ta" class="xref">Section 8.2.2</a>.<a href="#section-8-9" class="pilcrow">¶</a></p>
 <p id="section-8-10">A formal analysis of Oblivious HTTP is in <span>[<a href="#OHTTP-ANALYSIS" class="xref">OHTTP-ANALYSIS</a>]</span>.<a href="#section-8-10" class="pilcrow">¶</a></p>
 <div id="client-responsibilities">
 <section id="section-8.1">
@@ -2365,9 +2402,9 @@ encapsulated response.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
 <p id="section-8.2-3">A proxy MUST NOT add information about the client identity when forwarding
 requests. This includes the Via field, the Forwarded field
 <span>[<a href="#FORWARDED" class="xref">FORWARDED</a>]</span>, and any similar information.  A client does not depend
-on the proxy using an authenticated and encrypted connection to the oblivious request
-resource, only that information about the client not be attached to forwarded
-requests.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
+on the proxy using an authenticated and encrypted connection to the oblivious
+request resource, only that information about the client not be attached to
+forwarded requests.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
 <div id="dos">
 <section id="section-8.2.1">
           <h4 id="name-denial-of-service">
@@ -2417,32 +2454,36 @@ providing larger sets of messages that need to be matched.<a href="#section-8.2.
 <p id="section-8.3-1">A server that operates both oblivious request and oblivious target resources is
 responsible for removing request encapsulation, generating a response the
 encapsulated request, and encapsulating the response.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
-<p id="section-8.3-2">Servers should account for traffic analysis based on response size or generation time.
-Techniques such as padding or timing delays can help protect against such attacks;
-see <a href="#ta" class="xref">Section 8.2.2</a>.<a href="#section-8.3-2" class="pilcrow">¶</a></p>
-<p id="section-8.3-3">If separate entities provide the oblivious request resource and oblivious
-target resource, these entities might need an arrangement similar to that
-between server and proxy for managing denial of service; see <a href="#dos" class="xref">Section 8.2.1</a>. It is
-also necessary to provide confidentiality protection for the unprotected
-requests and responses, plus protections for traffic analysis; see <a href="#ta" class="xref">Section 8.2.2</a>.<a href="#section-8.3-3" class="pilcrow">¶</a></p>
+<p id="section-8.3-2">Servers should account for traffic analysis based on response size or generation
+time.  Techniques such as padding or timing delays can help protect against such
+attacks; see <a href="#ta" class="xref">Section 8.2.2</a>.<a href="#section-8.3-2" class="pilcrow">¶</a></p>
+<p id="section-8.3-3">If separate entities provide the oblivious request resource and oblivious target
+resource, these entities might need an arrangement similar to that between
+server and proxy for managing denial of service; see <a href="#dos" class="xref">Section 8.2.1</a>. It is also
+necessary to provide confidentiality protection for the unprotected requests and
+responses, plus protections for traffic analysis; see <a href="#ta" class="xref">Section 8.2.2</a>.<a href="#section-8.3-3" class="pilcrow">¶</a></p>
 <p id="section-8.3-4">An oblivious request resource needs to have a plan for replacing keys. This
 might include regular replacement of keys, which can be assigned new key
-identifiers. If an oblivious request resource receives a request that contains
-a key identifier that it does not understand or that corresponds to a key that
-has been replaced, the server can respond with an HTTP 422 (Unprocessable
-Content) status code.<a href="#section-8.3-4" class="pilcrow">¶</a></p>
-<p id="section-8.3-5">A server can also use a 422 status code if the server has a key that
-corresponds to the key identifier, but the encapsulated request cannot be
-successfully decrypted using the key.<a href="#section-8.3-5" class="pilcrow">¶</a></p>
+identifiers. If an oblivious request resource receives a request that contains a
+key identifier that it does not understand or that corresponds to a key that has
+been replaced, the server can respond with an HTTP 422 (Unprocessable Content)
+status code.<a href="#section-8.3-4" class="pilcrow">¶</a></p>
+<p id="section-8.3-5">A server can also use a 422 status code if the server has a key that corresponds
+to the key identifier, but the encapsulated request cannot be successfully
+decrypted using the key.<a href="#section-8.3-5" class="pilcrow">¶</a></p>
 <p id="section-8.3-6">A server MUST ensure that the HPKE keys it uses are not valid for any other
-protocol that uses HPKE with the "message/bhttp request" label.  Designers of other
-protocols, especially new versions of this protocol, can ensure key diversity by
-choosing a different label in their use of HPKE.  The "message/bhttp response" label was
-chosen for symmetry only as it provides key diversity only within the HPKE
-context created using the "message/bhttp request" label.<a href="#section-8.3-6" class="pilcrow">¶</a></p>
+protocol that uses HPKE with the "message/bhttp request" label.  Designers of
+protocols that reuse this encapsulation format, especially new versions of this
+protocol, can ensure key diversity by choosing a different label in their use of
+HPKE.  The "message/bhttp response" label was chosen for symmetry only as it
+provides key diversity only within the HPKE context created using the
+"message/bhttp request" label; see <a href="#repurposing-the-encapsulation-format" class="xref">Section 11</a>.<a href="#section-8.3-6" class="pilcrow">¶</a></p>
+<p id="section-8.3-7">A server is responsible for either rejecting replayed requests or ensuring that
+the effect of replays does not adversely affect clients or resources; see
+<a href="#replay" class="xref">Section 8.4</a>.<a href="#section-8.3-7" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="replay-attacks">
+<div id="replay">
 <section id="section-8.4">
         <h3 id="name-replay-attacks">
 <a href="#section-8.4" class="section-number selfRef">8.4. </a><a href="#name-replay-attacks" class="section-name selfRef">Replay Attacks</a>
@@ -2463,16 +2504,13 @@ identifier (in either protocol version) are all sufficient signals that no
 processing occurred. Connection failures or interruptions are not sufficient
 signals that no processing occurred.<a href="#section-8.4-2" class="pilcrow">¶</a></p>
 <p id="section-8.4-3">The anti-replay mechanisms described in <span><a href="https://rfc-editor.org/rfc/rfc8446#section-8" class="relref">Section 8</a> of [<a href="#TLS" class="xref">TLS</a>]</span> are generally
-applicable to oblivious HTTP requests. Servers can use the encapsulated keying
-material as a unique key for identifying potential replays. This depends on
-clients generating a new HPKE context for every request.<a href="#section-8.4-3" class="pilcrow">¶</a></p>
+applicable to oblivious HTTP requests. The encapsulated keying material (or
+<code>enc</code>) can be used in place of a nonce to uniquely identify a request.  This
+value is a high-entropy value that is freshly generated for every request, so
+two valid requests will have different values with overwhelming probability.<a href="#section-8.4-3" class="pilcrow">¶</a></p>
 <p id="section-8.4-4">The mechanism used in TLS for managing differences in client and server clocks
 cannot be used as it depends on being able to observe previous interactions.
-Oblivious HTTP explicitly prevents such linkability.
-Applications can still include an explicit indication of time to limit the span
-of time over which a server might need to track accepted requests. Clock
-information could be used for client identification, so reduction in precision
-or obfuscation might be necessary.<a href="#section-8.4-4" class="pilcrow">¶</a></p>
+Oblivious HTTP explicitly prevents such linkability.<a href="#section-8.4-4" class="pilcrow">¶</a></p>
 <p id="section-8.4-5">The considerations in <span>[<a href="#RFC8470" class="xref">RFC8470</a>]</span> as they relate to managing the risk of
 replay also apply, though there is no option to delay the processing of a
 request.<a href="#section-8.4-5" class="pilcrow">¶</a></p>
@@ -2481,13 +2519,39 @@ applications, particularly those that involve the submission of data to a
 server. The use of idempotent methods might be of some use in managing replay
 risk, though it is important to recognize that different idempotent requests
 can be combined to be not idempotent.<a href="#section-8.4-6" class="pilcrow">¶</a></p>
-<p id="section-8.4-7">Idempotent actions with a narrow scope based on the value of a protected nonce
-could enable data submission with limited replay exposure. A nonce might be
-added as an explicit part of a request, or, if the oblivious request and target
-resources are co-located, the encapsulated keying material can be used to
-produce a nonce.<a href="#section-8.4-7" class="pilcrow">¶</a></p>
-<p id="section-8.4-8">The server-chosen <code>response_nonce</code> field ensures that responses have unique
-AEAD keys and nonces even when requests are replayed.<a href="#section-8.4-8" class="pilcrow">¶</a></p>
+<p id="section-8.4-7">Even without replay prevention, the server-chosen <code>response_nonce</code> field
+ensures that responses have unique AEAD keys and nonces even when requests are
+replayed.<a href="#section-8.4-7" class="pilcrow">¶</a></p>
+<div id="use-of-date-for-anti-replay">
+<section id="section-8.4.1">
+          <h4 id="name-use-of-date-for-anti-replay">
+<a href="#section-8.4.1" class="section-number selfRef">8.4.1. </a><a href="#name-use-of-date-for-anti-replay" class="section-name selfRef">Use of Date for Anti-Replay</a>
+          </h4>
+<p id="section-8.4.1-1">Clients SHOULD include a <code>Date</code> header field in encapsulated requests.  Though
+HTTP requests often do not include a <code>Date</code> header field, the value of this
+field might be used by a server to limit the amount of requests it needs to
+track when preventing replays.<a href="#section-8.4.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.4.1-2">A server can maintain state for requests for a small window of time over which
+it wishes to accept requests.  The server then rejects requests if the request
+is the same as one that was previously answered within that time window.
+Servers can reject requests outside of this window and signal that clients might
+retry with a different <code>Date</code> header field; see <span><a href="https://datatracker.ietf.org/doc/html/draft-thomson-httpapi-date-requests-00#section-4" class="relref">Section 4</a> of [<a href="#REQUEST-DATE" class="xref">REQUEST-DATE</a>]</span>.
+Servers can identify duplicate requests using the encapsulation (<code>enc</code>) value.<a href="#section-8.4.1-2" class="pilcrow">¶</a></p>
+<p id="section-8.4.1-3">Servers SHOULD allow for the time it takes requests to arrive from the client,
+with a time window that is large enough to allow for differences in the clock of
+clients and servers.  How large a time window is needed could depend on the
+population of clients that the server needs to serve.<a href="#section-8.4.1-3" class="pilcrow">¶</a></p>
+<p id="section-8.4.1-4">Servers MUST NOT treat the time window as secret information. An attacker can
+actively probe the server with specially crafted request timestamps to determine
+the time window over which the server will accept responses.<a href="#section-8.4.1-4" class="pilcrow">¶</a></p>
+<p id="section-8.4.1-5"><span>[<a href="#REQUEST-DATE" class="xref">REQUEST-DATE</a>]</span> contains further
+considerations for the use of the <code>Date</code> request header field.  This includes
+the way in which clients might correct for clock skew and the privacy
+considerations arising from that usage.  Servers that reject requests on the
+basis of the <code>Date</code> request header field SHOULD implement the feedback mechanism
+in <span><a href="https://datatracker.ietf.org/doc/html/draft-thomson-httpapi-date-requests-00#section-4" class="relref">Section 4</a> of [<a href="#REQUEST-DATE" class="xref">REQUEST-DATE</a>]</span> to support clock correction by clients.<a href="#section-8.4.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="post-compromise-security">
@@ -2495,22 +2559,22 @@ AEAD keys and nonces even when requests are replayed.<a href="#section-8.4-8" cl
         <h3 id="name-post-compromise-security">
 <a href="#section-8.5" class="section-number selfRef">8.5. </a><a href="#name-post-compromise-security" class="section-name selfRef">Post-Compromise Security</a>
         </h3>
-<p id="section-8.5-1">This design does not provide post-compromise security for responses. A client
-only needs to retain keying material that might be used compromise the
+<p id="section-8.5-1">This design does not provide post-compromise security for responses.<a href="#section-8.5-1" class="pilcrow">¶</a></p>
+<p id="section-8.5-2">A client only needs to retain keying material that might be used compromise the
 confidentiality and integrity of a response until that response is consumed, so
-there is negligible risk associated with a client compromise.<a href="#section-8.5-1" class="pilcrow">¶</a></p>
-<p id="section-8.5-2">A server retains a secret key that might be used to remove protection from messages
-over much longer periods. A server compromise that provided access to the
-oblivious request resource secret key could allow an attacker to recover the
+there is negligible risk associated with a client compromise.<a href="#section-8.5-2" class="pilcrow">¶</a></p>
+<p id="section-8.5-3">A server retains a secret key that might be used to remove protection from
+messages over much longer periods. A server compromise that provided access to
+the oblivious request resource secret key could allow an attacker to recover the
 plaintext of all requests sent toward affected keys and all of the responses
-that were generated.<a href="#section-8.5-2" class="pilcrow">¶</a></p>
-<p id="section-8.5-3">Even if server keys are compromised, an adversary cannot access messages
+that were generated.<a href="#section-8.5-3" class="pilcrow">¶</a></p>
+<p id="section-8.5-4">Even if server keys are compromised, an adversary cannot access messages
 exchanged by the client with the oblivious proxy resource as messages are
 protected by TLS.  Use of a compromised key also requires that the oblivious
 proxy resource cooperate with the attacker or that the attacker is able to
-compromise these TLS connections.<a href="#section-8.5-3" class="pilcrow">¶</a></p>
-<p id="section-8.5-4">The total number of affected messages affected by server key compromise can be
-limited by regular rotation of server keys.<a href="#section-8.5-4" class="pilcrow">¶</a></p>
+compromise these TLS connections.<a href="#section-8.5-4" class="pilcrow">¶</a></p>
+<p id="section-8.5-5">The total number of affected messages affected by server key compromise can be
+limited by regular rotation of server keys.<a href="#section-8.5-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2520,8 +2584,8 @@ limited by regular rotation of server keys.<a href="#section-8.5-4" class="pilcr
       <h2 id="name-privacy-considerations">
 <a href="#section-9" class="section-number selfRef">9. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
       </h2>
-<p id="section-9-1">One goal of this design is that independent client requests are only linkable
-by the chosen key configuration. The oblivious proxy and request resources can link
+<p id="section-9-1">One goal of this design is that independent client requests are only linkable by
+the chosen key configuration. The oblivious proxy and request resources can link
 requests using the same key configuration by matching KeyConfig.key_id, or, if
 the oblivious target resource is willing to use trial decryption, a limited set
 of key configurations that share an identifier. An oblivious proxy can link
@@ -2595,17 +2659,18 @@ content is accessible to middleboxes.<a href="#section-10.3-2" class="pilcrow">�
       <h2 id="name-repurposing-the-encapsulati">
 <a href="#section-11" class="section-number selfRef">11. </a><a href="#name-repurposing-the-encapsulati" class="section-name selfRef">Repurposing the Encapsulation Format</a>
       </h2>
-<p id="section-11-1">The encapsulated payload of an OHTTP request and response is a binary HTTP message
-<span>[<a href="#BINARY" class="xref">BINARY</a>]</span>. Client and target agree on this encapsulated payload type by specifying
-the media type "message/bhttp" in the HPKE encapsulation info string and HPKE export
-context string for request and response encapsulation, respectively.<a href="#section-11-1" class="pilcrow">¶</a></p>
-<p id="section-11-2">Future specifications may repurpose the encapsulation mechanism described
-in <a href="#hpke-encapsulation" class="xref">Section 5</a>, provided that the content type of the encapsulated
+<p id="section-11-1">The encapsulated payload of an OHTTP request and response is a binary HTTP
+message <span>[<a href="#BINARY" class="xref">BINARY</a>]</span>. Client and target agree on this encapsulated payload type by
+specifying the media type "message/bhttp" in the HPKE encapsulation info string
+and HPKE export context string for request and response encapsulation,
+respectively.<a href="#section-11-1" class="pilcrow">¶</a></p>
+<p id="section-11-2">Future specifications may repurpose the encapsulation mechanism described in
+<a href="#hpke-encapsulation" class="xref">Section 5</a>, provided that the content type of the encapsulated
 payload is appropriately reflected in the HPKE info and context strings. For
-example, if a future specification were to use the encapsulation mechanism in this
-specification for DNS messages, identified by the "application/dns-message"
-media type, then the HPKE info string SHOULD be "application/dns-message request"
-for request encapsulation, and the HPKE export context string should be
+example, if a future specification were to use the encapsulation mechanism in
+this specification for DNS messages, identified by the "application/dns-message"
+media type, then the HPKE info string SHOULD be "application/dns-message
+request" for request encapsulation, and the HPKE export context string should be
 "application/dns-message response" for response encapsulation.<a href="#section-11-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2615,9 +2680,9 @@ for request encapsulation, and the HPKE export context string should be
 <a href="#section-12" class="section-number selfRef">12. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
 <p id="section-12-1">Please update the "Media Types" registry at
-<a href="https://www.iana.org/assignments/media-types">https://www.iana.org/assignments/media-types</a> with the registration
-information in <a href="#media-types" class="xref">Section 7</a> for the media types "message/ohttp-req",
-"message/ohttp-res", and "application/ohttp-keys".<a href="#section-12-1" class="pilcrow">¶</a></p>
+<a href="https://www.iana.org/assignments/media-types">https://www.iana.org/assignments/media-types</a> with the registration information
+in <a href="#media-types" class="xref">Section 7</a> for the media types "message/ohttp-req", "message/ohttp-res",
+and "application/ohttp-keys".<a href="#section-12-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <section id="section-13">
@@ -2648,6 +2713,10 @@ information in <a href="#media-types" class="xref">Section 7</a> for the media t
 <dt id="QUIC-HTTP">[QUIC-HTTP]</dt>
         <dd>
 <span class="refAuthor">Bishop, M.</span>, <span class="refTitle">"Hypertext Transfer Protocol Version 3 (HTTP/3)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-http-34</span>, <time datetime="2021-02-02" class="refDate">2 February 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-http-34">https://datatracker.ietf.org/doc/html/draft-ietf-quic-http-34</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="REQUEST-DATE">[REQUEST-DATE]</dt>
+        <dd>
+<span class="refAuthor">Thomson, M.</span>, <span class="refTitle">"Using The Date Header Field In HTTP Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-thomson-httpapi-date-requests-00</span>, <time datetime="2022-02-08" class="refDate">8 February 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-thomson-httpapi-date-requests-00">https://datatracker.ietf.org/doc/html/draft-thomson-httpapi-date-requests-00</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>

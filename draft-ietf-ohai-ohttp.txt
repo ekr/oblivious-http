@@ -92,6 +92,7 @@ Table of Contents
        8.2.2.  Linkability Through Traffic Analysis
      8.3.  Server Responsibilities
      8.4.  Replay Attacks
+       8.4.1.  Use of Date for Anti-Replay
      8.5.  Post-Compromise Security
    9.  Privacy Considerations
    10. Operational and Deployment Considerations
@@ -432,14 +433,22 @@ Table of Contents
 5.  HPKE Encapsulation
 
    HTTP message encapsulation uses HPKE for request and response
-   encryption.  An encapsulated HTTP message includes a binary-encoded
-   HTTP message and no other content; see [BINARY].
+   encryption.
+
+   An encapsulated HTTP request contains a binary-encoded HTTP message
+   [BINARY] and no other fields; see Figure 3.
+
+   Request {
+     Binary HTTP Message (..),
+   }
+
+                    Figure 3: Plaintext Request Content
 
    An Encapsulated Request is comprised of a length-prefixed key
    identifier and a HPKE-protected request message.  HPKE protection
    includes an encapsulated KEM shared secret (or enc), plus the AEAD-
    protected request message.  An Encapsulated Request is shown in
-   Figure 3.  Section 5.1 describes the process for constructing and
+   Figure 4.  Section 5.1 describes the process for constructing and
    processing an Encapsulated Request.
 
    Encapsulated Request {
@@ -451,7 +460,19 @@ Table of Contents
      AEAD-Protected Request (..),
    }
 
-                       Figure 3: Encapsulated Request
+                       Figure 4: Encapsulated Request
+
+   The Nenc parameter corresponding to the HpkeKdfId can be found in
+   Section 7.1 of [HPKE].
+
+   An encapsulated HTTP response includes a binary-encoded HTTP message
+   [BINARY] and no other content; see Figure 5.
+
+   Response {
+     Binary HTTP Message (..),
+   }
+
+                    Figure 5: Plaintext Response Content
 
    Responses are bound to responses and so consist only of AEAD-
    protected content.  Section 5.2 describes the process for
@@ -462,7 +483,7 @@ Table of Contents
      AEAD-Protected Response (..),
    }
 
-                      Figure 4: Encapsulated Response
+                      Figure 6: Encapsulated Response
 
    The Nenc and Nk parameters corresponding to the HpkeKdfId can be
    found in [HPKE].  Nenc refers to the size of the encapsulated KEM
@@ -482,8 +503,8 @@ Table of Contents
    *  a selected combination of KDF, identified by kdfID, and AEAD,
       identified by aeadID.
 
-   The client then constructs an encapsulated request, enc_request, as
-   follows:
+   The client then constructs an encapsulated request, enc_request, from
+   a binary encoded HTTP request, request, as follows:
 
    1.  Compute an HPKE context using pkR and a label of "message/bhttp
        request", yielding context and encapsulation key enc.
@@ -973,11 +994,16 @@ Table of Contents
 
    A server MUST ensure that the HPKE keys it uses are not valid for any
    other protocol that uses HPKE with the "message/bhttp request" label.
-   Designers of other protocols, especially new versions of this
-   protocol, can ensure key diversity by choosing a different label in
-   their use of HPKE.  The "message/bhttp response" label was chosen for
-   symmetry only as it provides key diversity only within the HPKE
-   context created using the "message/bhttp request" label.
+   Designers of protocols that reuse this encapsulation format,
+   especially new versions of this protocol, can ensure key diversity by
+   choosing a different label in their use of HPKE.  The "message/bhttp
+   response" label was chosen for symmetry only as it provides key
+   diversity only within the HPKE context created using the "message/
+   bhttp request" label; see Section 11.
+
+   A server is responsible for either rejecting replayed requests or
+   ensuring that the effect of replays does not adversely affect clients
+   or resources; see Section 8.4.
 
 8.4.  Replay Attacks
 
@@ -1001,19 +1027,16 @@ Table of Contents
    no processing occurred.
 
    The anti-replay mechanisms described in Section 8 of [TLS] are
-   generally applicable to oblivious HTTP requests.  Servers can use the
-   encapsulated keying material as a unique key for identifying
-   potential replays.  This depends on clients generating a new HPKE
-   context for every request.
+   generally applicable to oblivious HTTP requests.  The encapsulated
+   keying material (or enc) can be used in place of a nonce to uniquely
+   identify a request.  This value is a high-entropy value that is
+   freshly generated for every request, so two valid requests will have
+   different values with overwhelming probability.
 
    The mechanism used in TLS for managing differences in client and
    server clocks cannot be used as it depends on being able to observe
    previous interactions.  Oblivious HTTP explicitly prevents such
-   linkability.  Applications can still include an explicit indication
-   of time to limit the span of time over which a server might need to
-   track accepted requests.  Clock information could be used for client
-   identification, so reduction in precision or obfuscation might be
-   necessary.
+   linkability.
 
    The considerations in [RFC8470] as they relate to managing the risk
    of replay also apply, though there is no option to delay the
@@ -1026,18 +1049,48 @@ Table of Contents
    to recognize that different idempotent requests can be combined to be
    not idempotent.
 
-   Idempotent actions with a narrow scope based on the value of a
-   protected nonce could enable data submission with limited replay
-   exposure.  A nonce might be added as an explicit part of a request,
-   or, if the oblivious request and target resources are co-located, the
-   encapsulated keying material can be used to produce a nonce.
+   Even without replay prevention, the server-chosen response_nonce
+   field ensures that responses have unique AEAD keys and nonces even
+   when requests are replayed.
 
-   The server-chosen response_nonce field ensures that responses have
-   unique AEAD keys and nonces even when requests are replayed.
+8.4.1.  Use of Date for Anti-Replay
+
+   Clients SHOULD include a Date header field in encapsulated requests.
+   Though HTTP requests often do not include a Date header field, the
+   value of this field might be used by a server to limit the amount of
+   requests it needs to track when preventing replays.
+
+   A server can maintain state for requests for a small window of time
+   over which it wishes to accept requests.  The server then rejects
+   requests if the request is the same as one that was previously
+   answered within that time window.  Servers can reject requests
+   outside of this window and signal that clients might retry with a
+   different Date header field; see Section 4 of [REQUEST-DATE].
+   Servers can identify duplicate requests using the encapsulation (enc)
+   value.
+
+   Servers SHOULD allow for the time it takes requests to arrive from
+   the client, with a time window that is large enough to allow for
+   differences in the clock of clients and servers.  How large a time
+   window is needed could depend on the population of clients that the
+   server needs to serve.
+
+   Servers MUST NOT treat the time window as secret information.  An
+   attacker can actively probe the server with specially crafted request
+   timestamps to determine the time window over which the server will
+   accept responses.
+
+   [REQUEST-DATE] contains further considerations for the use of the
+   Date request header field.  This includes the way in which clients
+   might correct for clock skew and the privacy considerations arising
+   from that usage.  Servers that reject requests on the basis of the
+   Date request header field SHOULD implement the feedback mechanism in
+   Section 4 of [REQUEST-DATE] to support clock correction by clients.
 
 8.5.  Post-Compromise Security
 
    This design does not provide post-compromise security for responses.
+
    A client only needs to retain keying material that might be used
    compromise the confidentiality and integrity of a response until that
    response is consumed, so there is negligible risk associated with a
@@ -1184,6 +1237,13 @@ Table of Contents
               quic-http-34, 2 February 2021,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
               http-34>.
+
+   [REQUEST-DATE]
+              Thomson, M., "Using The Date Header Field In HTTP
+              Requests", Work in Progress, Internet-Draft, draft-
+              thomson-httpapi-date-requests-00, 8 February 2022,
+              <https://datatracker.ietf.org/doc/html/draft-thomson-
+              httpapi-date-requests-00>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
