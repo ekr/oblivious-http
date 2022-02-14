@@ -1213,6 +1213,17 @@ from the same client.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="xref">10</a>. <a href="#name-operational-and-deployment-" class="xref">Operational and Deployment Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="xref">10.1</a>.  <a href="#name-performance-overhead" class="xref">Performance Overhead</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
+                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="xref">10.2</a>.  <a href="#name-resource-mappings" class="xref">Resource Mappings</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.3">
+                <p id="section-toc.1-1.10.2.3.1"><a href="#section-10.3" class="xref">10.3</a>.  <a href="#name-network-management" class="xref">Network Management</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
             <p id="section-toc.1-1.11.1"><a href="#section-11" class="xref">11</a>. <a href="#name-repurposing-the-encapsulati" class="xref">Repurposing the Encapsulation Format</a></p>
@@ -1357,7 +1368,9 @@ including an identifier for that key and the HPKE algorithms that are
 used with that key.<a href="#section-3-2.2" class="pilcrow">¶</a>
 </li>
         <li class="normal" id="section-3-2.3">The identity of an oblivious proxy resource that will forward encapsulated
-requests and responses to the oblivious request resource.<a href="#section-3-2.3" class="pilcrow">¶</a>
+requests and responses to a single oblivious request resource. See <a href="#proxy-state" class="xref">Section 10.2</a>
+for more information about the mapping between oblivious proxy and oblivious
+request resources.<a href="#section-3-2.3" class="pilcrow">¶</a>
 </li>
       </ul>
 <p id="section-3-3">This information allows the client to make a request of an oblivious target
@@ -2529,20 +2542,52 @@ for ensuring the key configurations are consistent between different clients.<a 
       <h2 id="name-operational-and-deployment-">
 <a href="#section-10" class="section-number selfRef">10. </a><a href="#name-operational-and-deployment-" class="section-name selfRef">Operational and Deployment Considerations</a>
       </h2>
-<p id="section-10-1">Using Oblivious HTTP adds both cryptographic and latency to requests relative to
+<p id="section-10-1">This section discusses various operational and deployment considerations.<a href="#section-10-1" class="pilcrow">¶</a></p>
+<div id="performance-overhead">
+<section id="section-10.1">
+        <h3 id="name-performance-overhead">
+<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-performance-overhead" class="section-name selfRef">Performance Overhead</a>
+        </h3>
+<p id="section-10.1-1">Using Oblivious HTTP adds both cryptographic and latency to requests relative to
 a simple HTTP request-response exchange.  Deploying proxy services that are on
 path between clients and servers avoids adding significant additional delay due
 to network topology.  A study of a similar system <span>[<a href="#ODoH" class="xref">ODoH</a>]</span> found that deploying
-proxies close to servers was most effective in minimizing additional latency.<a href="#section-10-1" class="pilcrow">¶</a></p>
-<p id="section-10-2">Oblivious HTTP might be incompatible with network interception regimes, such as
+proxies close to servers was most effective in minimizing additional latency.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="proxy-state">
+<section id="section-10.2">
+        <h3 id="name-resource-mappings">
+<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-resource-mappings" class="section-name selfRef">Resource Mappings</a>
+        </h3>
+<p id="section-10.2-1">This protocol assumes a fixed, one-to-one mapping between the Oblivious Proxy 
+Resource and the Oblivious Request Resource. This means that any encapsulated 
+request sent to the Oblivious Proxy Resource will always be forwarded to the 
+Oblivious Request Resource. This constraint was imposed to simplify proxy 
+configuration and mitigate against the Oblivious Proxy Resource being used as 
+a generic proxy for unknown Oblivious Request Resources. The proxy will only 
+forward for Oblivious Request Resources that it has explicitly configured and 
+allowed.<a href="#section-10.2-1" class="pilcrow">¶</a></p>
+<p id="section-10.2-2">It is possible for a server to be configured with multiple Oblivious
+Proxy Resources, each for a different Oblivious Request Resource as needed.<a href="#section-10.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="network-management">
+<section id="section-10.3">
+        <h3 id="name-network-management">
+<a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-network-management" class="section-name selfRef">Network Management</a>
+        </h3>
+<p id="section-10.3-1">Oblivious HTTP might be incompatible with network interception regimes, such as
 those that rely on configuring clients with trust anchors and intercepting TLS
 connections.  While TLS might be intercepted successfully, interception
 middleboxes devices might not receive updates that would allow Oblivious HTTP to
-be correctly identified using the media types defined in <a href="#media-types" class="xref">Section 7</a>.<a href="#section-10-2" class="pilcrow">¶</a></p>
-<p id="section-10-3">Oblivious HTTP has a simple key management design that is not trivially altered
+be correctly identified using the media types defined in <a href="#media-types" class="xref">Section 7</a>.<a href="#section-10.3-1" class="pilcrow">¶</a></p>
+<p id="section-10.3-2">Oblivious HTTP has a simple key management design that is not trivially altered
 to enable interception by intermediaries.  Clients that are configured to enable
 interception might choose to disable Oblivious HTTP in order to ensure that
-content is accessible to middleboxes.<a href="#section-10-3" class="pilcrow">¶</a></p>
+content is accessible to middleboxes.<a href="#section-10.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="repurposing-the-encapsulation-format">
