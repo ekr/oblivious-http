@@ -5,8 +5,8 @@
 Oblivious HTTP Application Intermediation                     M. Thomson
 Internet-Draft                                                   Mozilla
 Intended status: Standards Track                               C.A. Wood
-Expires: 11 August 2022                                       Cloudflare
-                                                         7 February 2022
+Expires: 18 August 2022                                       Cloudflare
+                                                        14 February 2022
 
 
                              Oblivious HTTP
@@ -51,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 August 2022.
+   This Internet-Draft will expire on 18 August 2022.
 
 Copyright Notice
 
@@ -1064,7 +1064,9 @@ Table of Contents
    key configurations is not included in this specification.  Clients
    need to consider these tracking vectors when choosing a discovery
    method.  Applications using this design should provide accommodations
-   to mitigate tracking using key configurations.
+   to mitigate tracking using key configurations.  [CONSISTENCY]
+   provides an analysis of the options for ensuring the key
+   configurations are consistent between different clients.
 
 10.  Operational and Deployment Considerations
 
@@ -1175,6 +1177,13 @@ Table of Contents
    [ALT-SVC]  Nottingham, M., McManus, P., and J. Reschke, "HTTP
               Alternative Services", RFC 7838, DOI 10.17487/RFC7838,
               April 2016, <https://www.rfc-editor.org/rfc/rfc7838>.
+
+   [CONSISTENCY]
+              Davidson, A., Finkel, M., Thomson, M., and C. A. Wood,
+              "Key Consistency and Discovery", Work in Progress,
+              Internet-Draft, draft-wood-key-consistency-01, 19 August
+              2021, <https://datatracker.ietf.org/doc/html/draft-wood-
+              key-consistency-01>.
 
    [COOKIES]  Barth, A., "HTTP State Management Mechanism", RFC 6265,
               DOI 10.17487/RFC6265, April 2011,
