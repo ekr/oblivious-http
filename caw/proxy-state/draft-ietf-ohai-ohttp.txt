@@ -96,7 +96,7 @@ Table of Contents
    9.  Privacy Considerations
    10. Operational and Deployment Considerations
      10.1.  Performance Overhead
-     10.2.  Oblivious Proxy State
+     10.2.  Resource Mappings
      10.3.  Network Management
    11. Repurposing the Encapsulation Format
    12. IANA Considerations
@@ -1086,7 +1086,7 @@ Table of Contents
    similar system [ODoH] found that deploying proxies close to servers
    was most effective in minimizing additional latency.
 
-10.2.  Oblivious Proxy State
+10.2.  Resource Mappings
 
    The Oblivious Proxy Resource is a fixed mapping between URI and the
    Oblivious Request Resource.  This means that any encapsulated request
