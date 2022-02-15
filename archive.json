@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-02-08T00:20:15.525534+00:00",
+  "timestamp": "2022-02-15T00:21:19.303015+00:00",
   "repo": "ietf-wg-ohai/oblivious-http",
   "labels": [
     {
@@ -471,16 +471,24 @@
       "id": "MDU6SXNzdWU3OTI0MDg5OTU=",
       "title": "Ensure key configuration matches ECH",
       "url": "https://github.com/ietf-wg-ohai/oblivious-http/issues/27",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
-      "authorAssociation": "CONTRIBUTOR",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "We are proposing alignment, but we need to make sure that happens.",
       "createdAt": "2021-01-23T02:04:17Z",
-      "updatedAt": "2021-01-23T02:04:17Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2022-02-14T01:18:29Z",
+      "closedAt": "2022-02-14T01:18:29Z",
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Achieved. Names are different, but the structure is the same.\r\n\r\nOurs:\r\n\r\n```\r\nopaque HpkePublicKey[Npk];\r\nuint16 HpkeKemId;\r\nuint16 HpkeKdfId;\r\nuint16 HpkeAeadId;\r\n\r\nstruct {\r\n  HpkeKdfId kdf_id;\r\n  HpkeAeadId aead_id;\r\n} HpkeSymmetricAlgorithms;\r\n\r\nstruct {\r\n  uint8 key_id;\r\n  HpkeKemId kem_id;\r\n  HpkePublicKey public_key;\r\n  HpkeSymmetricAlgorithms cipher_suites<4..2^16-4>;\r\n} KeyConfig;\r\n```\r\n\r\nTheirs:\r\n\r\n```\r\n    opaque HpkePublicKey<1..2^16-1>;\r\n    uint16 HpkeKemId;  // Defined in I-D.irtf-cfrg-hpke\r\n    uint16 HpkeKdfId;  // Defined in I-D.irtf-cfrg-hpke\r\n    uint16 HpkeAeadId; // Defined in I-D.irtf-cfrg-hpke\r\n\r\n    struct {\r\n        HpkeKdfId kdf_id;\r\n        HpkeAeadId aead_id;\r\n    } HpkeSymmetricCipherSuite;\r\n\r\n    struct {\r\n        uint8 config_id;\r\n        HpkeKemId kem_id;\r\n        HpkePublicKey public_key;\r\n        HpkeSymmetricCipherSuite cipher_suites<4..2^16-4>;\r\n    } HpkeKeyConfig;\r\n\r\n    struct {\r\n        HpkeKeyConfig key_config;\r\n        uint8 maximum_name_length;\r\n        opaque public_name<1..255>;\r\n        Extension extensions<0..2^16-1>;\r\n    } ECHConfigContents;\r\n\r\n    struct {\r\n        uint16 version;\r\n        uint16 length;\r\n        select (ECHConfig.version) {\r\n          case 0xfe0d: ECHConfigContents contents;\r\n        }\r\n    } ECHConfig;\r\n```\r\n\r\nNo need to keep this open at this stage.  If things drift, we can use a new issue.",
+          "createdAt": "2022-02-14T01:18:29Z",
+          "updatedAt": "2022-02-14T01:18:29Z"
+        }
+      ]
     },
     {
       "number": 31,
@@ -674,19 +682,19 @@
       "id": "MDU6SXNzdWU4MzM2MjQ4MzE=",
       "title": "Caching server keys on a client",
       "url": "https://github.com/ietf-wg-ohai/oblivious-http/issues/55",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ddragana",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Clients should cache server keys for some time. TTL can be supply in a cache-control header of a ohttp-keys response.\r\nShould this be mentioned or is it implied?",
       "createdAt": "2021-03-17T10:30:05Z",
-      "updatedAt": "2021-03-17T23:21:55Z",
-      "closedAt": null,
+      "updatedAt": "2022-02-14T14:31:22Z",
+      "closedAt": "2022-02-14T14:31:22Z",
       "comments": [
         {
           "author": "martinthomson",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "body": "The document doesn't really define the key configuration acquisition method, so it can't really cover details like caching (or retention).  Getting into specifics with HTTP Cache-Control is out of scope.\r\n\r\nThere is discussion of retention periods in [draft-wood-key-consistency](https://datatracker.ietf.org/doc/html/draft-wood-key-consistency), which are relevant and might be worth pointing to.  That document has uncertain status, but we might still use an informative reference.",
           "createdAt": "2021-03-17T23:21:55Z",
           "updatedAt": "2021-03-17T23:21:55Z"
@@ -748,15 +756,15 @@
       "id": "MDU6SXNzdWU5MjE5MTA2ODE=",
       "title": "Deployment considerations",
       "url": "https://github.com/ietf-wg-ohai/oblivious-http/issues/60",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
-      "authorAssociation": "CONTRIBUTOR",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Vittorio says:\r\n\r\n> [...] a new standard should include deployment recommendations to \r\n> prevent the worst scenarios from happening, or explanations of why \r\n> those scenarios are unlikely or unattractive for abusers.\r\n\r\nThis relates in particular to the potential for generic services with open destination (not a capability in the proposal) to be used for nefarious purposes (spamming, bot net command and control, hiding illegal activity, etc...).",
       "createdAt": "2021-06-15T23:46:34Z",
-      "updatedAt": "2021-06-15T23:46:34Z",
-      "closedAt": null,
+      "updatedAt": "2022-02-14T23:45:40Z",
+      "closedAt": "2022-02-14T23:45:40Z",
       "comments": []
     },
     {
@@ -764,15 +772,15 @@
       "id": "MDU6SXNzdWU5MzEzMTM4NzI=",
       "title": "Use new method",
       "url": "https://github.com/ietf-wg-ohai/oblivious-http/issues/61",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "elear",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "The draft currently makes use of POST to transit traffic through a proxy, which means that existing proxies would unwittingly allow communications they might otherwise prohibit.  The default should be for such traffic to not be permitted.  The easiest way to do that is to make use of a new method.  This would allow enterprise TLS proxies to make a determination for themselves which sites to allow obliviation.",
       "createdAt": "2021-06-28T08:30:37Z",
-      "updatedAt": "2021-06-28T17:58:16Z",
-      "closedAt": null,
+      "updatedAt": "2022-02-14T00:57:32Z",
+      "closedAt": "2022-02-14T00:57:32Z",
       "comments": [
         {
           "author": "ekr",
@@ -864,6 +872,13 @@
           "body": "> Can you explain how/why this mechanism would be used to update software/firmware?\r\n\r\nYou're misunderstanding me. The point is that these devices already need to have some mechanism for remote updating. If they wish for their devices to block O-HTTP by default, then they should use that mechanism to update them to do so.\r\n",
           "createdAt": "2021-06-28T17:58:16Z",
           "updatedAt": "2021-06-28T17:58:16Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I believe that the following text adequately addresses this concern:\r\n\r\n> Oblivious HTTP might be incompatible with network interception regimes, such as those that rely on configuring clients with trust anchors and intercepting TLS connections. While TLS might be intercepted successfully, interception middleboxes devices might not receive updates that would allow Oblivious HTTP to be correctly identified using the media types defined in [Section 7](https://ietf-wg-ohai.github.io/oblivious-http/draft-ietf-ohai-ohttp.html#media-types).\r\n\r\n-- https://ietf-wg-ohai.github.io/oblivious-http/draft-ietf-ohai-ohttp.html#section-10-2\r\n\r\nThat is, it doesn't attempt to fix the problem, but it identifies the nature of the problem.  The same problem (not being able to recognize the effect of the change) applies whether we use methods or media types.  It's *possible* that middleboxes are more likely to fail closed in the presence of an unknown method, but that's ossifying behaviour, not something that I think needs to be relied upon as I think this issue implies.\r\n\r\nI'm going to close this for now as I don't see any way, short of denying people the use of the protocol entirely, to address this issue in any more detail.",
+          "createdAt": "2022-02-14T00:57:32Z",
+          "updatedAt": "2022-02-14T00:57:32Z"
         }
       ]
     },
@@ -892,18 +907,27 @@
       "author": "ShivanKaul",
       "authorAssociation": "NONE",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "help wanted"
+      ],
       "body": "The draft currently says \"The oblivious proxy resource MUST NOT add information about the client to this request\". While identifying information would obviously defeat the whole point of OHTTP, it would be useful for the proxy to add some headers that would help the server with abuse mitigation while not revealing identity. \r\n\r\nFor a simple example, the proxy (which is IP address-aware) could add an `isMalicious` header if it sees a request from a known abusive IP address and then forward that to the server. The server could then use that signal + the contents of the request to determine what to do with the data (if it's telemetry, then it could choose not to count it). This would also be useful for shadowbanning clients, in which case you don't want the proxy to just outright reject the request. Importantly, the server doesn't come to know anything about the client other than the fact that the proxy thinks it is abusive (which doesn't split the anonymity set by too much \ud83d\ude05).  ",
       "createdAt": "2021-07-28T16:23:32Z",
-      "updatedAt": "2021-08-02T04:10:37Z",
+      "updatedAt": "2022-02-14T23:48:57Z",
       "closedAt": null,
       "comments": [
         {
           "author": "martinthomson",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "body": "This is a reasonable thing to do.  The question is how we can best frame this.  Implementing shadow bans by flagging requests seems like a good way to manage some aspects of this, but unbounded use of similar mechanisms could partition users too finely.  We should talk about this in a working group to understand it more completely.",
           "createdAt": "2021-08-02T04:10:37Z",
           "updatedAt": "2021-08-02T04:10:37Z"
+        },
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@martinthomson let's throw this one on the agenda for 113. ",
+          "createdAt": "2022-02-14T23:17:55Z",
+          "updatedAt": "2022-02-14T23:17:55Z"
         }
       ]
     },
@@ -912,22 +936,29 @@
       "id": "MDU6SXNzdWU5NzcyMzAzMTk=",
       "title": "Accommodate additional data during request and response encapsulation?",
       "url": "https://github.com/ietf-wg-ohai/oblivious-http/issues/70",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "chris-wood",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Currently, encapsulation uses key configuration parameters for AAD. Should encapsulation also allow clients to include additional context (as needed?) in the AAD? Not that it's the best example, but consider the following scenario. \r\n\r\nClients encapsulate requests that need to be processed in near real time. There is no value in processing requests _after_ some amount of time has passed. To achieve this, clients could throw a timestamp in the encapsulated request, possibly via a header or something. Checking this timestamp requires decapsulation. A malicious proxy could store and then later re-forward requests to a target, causing it to do a lot of wasted work. (It would decrypt each delayed request, check the timestamp, and then throw away the request because too much time has passed for it to be useful.)\r\n\r\nOne alternative would be for the wrapping request to convey the timestamp, possibly also via a header. However, since nothing in the wrapping request is bound to the encapsulated request, it's possible for the proxy to simply lie about this value. \r\n\r\nIf clients could specify additional authenticated data in the encapsulated request, they could bind something like this timestamp to the encapsulated request. This would (a) prevent the proxy from lying and changing it, and (b) give the target a quick way to check if processing the request is useful.\r\n\r\n@martinthomson, what do you think?",
       "createdAt": "2021-08-23T16:52:55Z",
-      "updatedAt": "2021-08-24T01:43:07Z",
-      "closedAt": null,
+      "updatedAt": "2022-02-13T21:58:12Z",
+      "closedAt": "2022-02-13T21:58:12Z",
       "comments": [
         {
           "author": "martinthomson",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "body": "So there is a whole cluster of things that we might want to work through here.\r\n\r\nWhat sort of anti-replay mechanisms might we provide generically?  It seems like time of request is a universal here as that allows the server to limit the time over which it needs to track replays.  HTTP requests do not usually include `Date`, but we could ask that they do so for this usage, see [the Date definition](https://httpwg.org/http-core/draft-ietf-httpbis-semantics-latest.html#rfc.section.6.6.1.p.10).\r\n\r\nWhat meta-information would we expose to the proxy?  I'm not sure that anything here motivates us making more information available to the proxy.\r\n\r\nWhat information might we provide in the outer envelope that a receiving server (or oblivious request resource) might use to detect replay by the proxy.  For that, I don't think we need anything new.  Well-behaved clients will generate a new key encapsulation for every request, so it should be reasonable to expect that to be unique.  That would allow for replay detection without removing encapsulation.\r\n\r\nAny information that a server might use to avoid work short of removing encapsulation can be trivially forged or rewritten by a proxy.  We should also concede the possibility that a proxy is able to act as a client.",
           "createdAt": "2021-08-24T01:43:07Z",
           "updatedAt": "2021-08-24T01:43:07Z"
+        },
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closing, as this has been directed elsewhere.",
+          "createdAt": "2022-02-13T21:58:12Z",
+          "updatedAt": "2022-02-13T21:58:12Z"
         }
       ]
     },
@@ -986,12 +1017,14 @@
       "url": "https://github.com/ietf-wg-ohai/oblivious-http/issues/75",
       "state": "OPEN",
       "author": "martinthomson",
-      "authorAssociation": "CONTRIBUTOR",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "help wanted"
+      ],
       "body": "The current design allows just a single message in each direction.  This is fine for a range of use cases, but it falls short of achieving the full range of things that HTTP normally allows.  We might consider making the encapsulation of messages more generic to support this.  This requires a length delineation so that individual pieces can be managed, a means of updating nonces (primarily for responses, we can just continue to use the same HPKE context for requests), plus some means of marking messages as incomplete (or complete) in order to prevent truncation attacks.\r\n\r\nA streaming design would allow for messages to be incrementally processed.  It would also allow 1xx status codes to be generated and sent independent of final status codes.\r\n\r\nThe cost of this is overhead (the length delimiter) and complexity (nonces, truncation).",
       "createdAt": "2021-10-25T23:39:03Z",
-      "updatedAt": "2021-10-25T23:39:03Z",
+      "updatedAt": "2022-02-14T23:49:43Z",
       "closedAt": null,
       "comments": []
     },
@@ -1004,10 +1037,12 @@
       "author": "martinthomson",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "help wanted"
+      ],
       "body": "The current design doesn't add any data to requests, so servers are only able to provide anti-replay based on what they see: the encapsulation and the content of the HTTP request.\r\n\r\nOne common factor in anti-replay designs is time.  It is easier to apply anti-replay protections for timestamped requests as any state can be bounded in time: requests are rejected as being a replay if they fall outside a small time window.  Should we include a timestamp in requests?  Or, should we merely insist on the Date header field being present?  It is somewhat [unusual](https://httpwg.org/http-core/draft-ietf-httpbis-semantics-latest.html#rfc.section.6.6.1.p.10) for Date to be present on requests, but it is permitted.\r\n\r\nThe other thing to consider is clock drift.  TLS uses an anti-replay design that uses relative times, which means that only relative clock drift over a short time needs to be accounted for.  Here, we have no prior synchronization, so we are forced to use absolute times.  That likely means a greater allowance for clock drift.\r\n\r\nIt also likely means that we need to include a new signal to clients for when their time is so badly off that their requests are being rejected.  Experience shows that client clocks are terrifically bad, but given prompting they might be able to adjust to match the server clock.  We need to be *very* careful to ensure that this sort of signal is properly authenticated, so that if clients do retry requests, they aren't subject to attacks that might cause them to be complicit in generating a replay attack.\r\n\r\nWe might also consider a nonce or other anti-replay measures, but as clients are required to perform a new encapsulation for every request, the `enc` value can be used.\r\n\r\n(This issue is split from #70.)",
       "createdAt": "2021-10-26T00:14:59Z",
-      "updatedAt": "2021-12-14T00:13:17Z",
+      "updatedAt": "2022-02-14T23:48:57Z",
       "closedAt": null,
       "comments": [
         {
@@ -1073,15 +1108,15 @@
       "id": "I_kwDOE6fLGM4-cEq7",
       "title": "Fixed mapping at the proxy",
       "url": "https://github.com/ietf-wg-ohai/oblivious-http/issues/77",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
-      "authorAssociation": "CONTRIBUTOR",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "The proxy has a fixed mapping.  It's resource maps to just one request resource.  That's a deliberate choice that we should probably be much more up front about.",
       "createdAt": "2021-11-08T14:53:14Z",
-      "updatedAt": "2021-11-08T14:55:02Z",
-      "closedAt": null,
+      "updatedAt": "2022-02-14T23:45:40Z",
+      "closedAt": "2022-02-14T23:45:40Z",
       "comments": [
         {
           "author": "tfpauly",
@@ -1149,16 +1184,24 @@
       "id": "I_kwDOE6fLGM4-dfg1",
       "title": "longer list of use cases and conditions where oblivious-http would help",
       "url": "https://github.com/ietf-wg-ohai/oblivious-http/issues/79",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "npdoty",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "I recognize that #42 / #44 added some conditions and use cases, but it would help readers like me to have even more. A separate explainer document/readme would be fine too.\r\n\r\nIn the meeting chat today, I heard the suggestion of requesting map tiles as another use case, which makes sense to me: asking for map tiles is itself pretty revealing if connected to the user's identity (it might reveal your current location, or a location where you're going to be) and can be pretty transactional/stateless. Maybe search queries are similar. Safe browsing lookups was also mentioned.\r\n\r\nHaving more example use cases might help in resolving other questions, like whether to support multiple HTTP requests at a time, or non-HTTP message bodies, etc. Ideally, we could explain the conditions under which adoption of ohttp will be useful -- maybe, a privacy need for reducing linkability of multiple requests or of a single request from user identity, and HTTP requests that are typically stateless or single-shot in some way, and frequent or performant-requiring at a certain level.",
       "createdAt": "2021-11-08T21:06:05Z",
-      "updatedAt": "2021-11-08T21:06:05Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2022-02-14T22:56:14Z",
+      "closedAt": "2022-02-14T22:56:14Z",
+      "comments": [
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@martinthomson added some more examples. @npdoty, I think we can safely close this now, so I'm going to go ahead and do that. Please reopen with concrete suggestions if you think the new text is insufficient!",
+          "createdAt": "2022-02-14T22:56:11Z",
+          "updatedAt": "2022-02-14T22:56:11Z"
+        }
+      ]
     },
     {
       "number": 85,
@@ -1185,10 +1228,12 @@
       "author": "martinthomson",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "help wanted"
+      ],
       "body": "In #76 and #88, we're talking about adding a timestamp to requests.  The problem with that is that - unlike TLS - we don't have any way to correct for gross clock errors.\r\n\r\nTLS manages this easily by leveraging a previous session to make that correction, reducing any relative clock error to the amount of drift over the week that a ticket can be used for early data.  This design has nothing like that it can use.\r\n\r\nTo correct for clock errors, we should think about whether the server should be able to signal that the request was rejected as a result of the time being too far out of synchronization.",
       "createdAt": "2021-12-13T09:43:52Z",
-      "updatedAt": "2021-12-13T23:30:10Z",
+      "updatedAt": "2022-02-14T23:48:58Z",
       "closedAt": null,
       "comments": [
         {
@@ -4790,21 +4835,21 @@
       "id": "PR_kwDOE6fLGM4vvaTH",
       "title": "Add a timestamp for anti-replay",
       "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/88",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2021-12-13T07:21:52Z",
-      "updatedAt": "2022-01-18T01:19:41Z",
+      "updatedAt": "2022-02-14T00:47:29Z",
       "baseRepository": "ietf-wg-ohai/oblivious-http",
       "baseRefName": "main",
       "baseRefOid": "1c49ebaff93d1f9f7aa96b8fd051b5356629e025",
       "headRepository": "martinthomson/oblivious-http",
       "headRefName": "anti-replay",
       "headRefOid": "4eb7ecfa5f6a4211922222b01b92b579db52dc8a",
-      "closedAt": null,
+      "closedAt": "2022-02-14T00:47:29Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -4815,6 +4860,13 @@
           "body": "Thanks for adding this change! I think my largest outstanding question is on the width of the timestamp. (We can always land 32 bits now and revisit later, of course.)",
           "createdAt": "2021-12-13T14:10:43Z",
           "updatedAt": "2021-12-13T14:10:43Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closing this one in favour of a new PR.",
+          "createdAt": "2022-02-14T00:47:26Z",
+          "updatedAt": "2022-02-14T00:47:26Z"
         }
       ],
       "reviews": [
@@ -5088,6 +5140,445 @@
           "createdAt": "2022-02-07T03:39:05Z",
           "updatedAt": "2022-02-07T03:39:05Z",
           "comments": []
+        }
+      ]
+    },
+    {
+      "number": 92,
+      "id": "PR_kwDOE6fLGM4yv21T",
+      "title": "Anti-replay mechanism",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/92",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This recommends the use of `Date` in requests as discussed on #88 and #76.\r\n\r\nMost of the heavy lifting is outsourced to [a new draft](https://datatracker.ietf.org/doc/draft-thomson-httpapi-date-requests/), so I won't merge this until we have some greater certainty about the destiny of that draft.\r\n\r\nCloses #76.\r\nCloses #89.",
+      "createdAt": "2022-02-14T00:51:55Z",
+      "updatedAt": "2022-02-14T23:31:19Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "61eeb56a04f9538df7d83b863503856bc7e11d90",
+      "headRepository": "martinthomson/oblivious-http",
+      "headRefName": "anti-replay",
+      "headRefOid": "bc04314cf2cfa6482a5d2422c826dd2b0cbf60d5",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> Either way, once you forget the old enc value, if you see the same enc value with a new value for t, it's a new request and you can accept it.\r\n\r\nThis seems like a separate issue, but: it seems really quite problematic if two requests had the same enc value but different values for t, as the client is then either reusing its key share or something else is going on. \r\n\r\nWhat my suggestion meant to say is that, if you get a value of t outside of the window, reject it or ask the client to retry with a new value of t. And use the new enc value to enforce your replay check for that given value t. That is, logically:\r\n\r\n- Given (enc, t) and enc has not been seen before in t, accept.\r\n- Given (enc, t) and enc has been seen in t, reject as replay.\r\n- Given (enc, t') and t' is not the current time window, reject and ask them to retry",
+          "createdAt": "2022-02-14T22:51:49Z",
+          "updatedAt": "2022-02-14T22:51:49Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Yeah, that's right.  I was interpreting your request as saying that you might need to do something with duplicate enc values even when you forgot the original.",
+          "createdAt": "2022-02-14T22:56:10Z",
+          "updatedAt": "2022-02-14T22:56:10Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOE6fLGM40hRks",
+          "commit": {
+            "abbreviatedOid": "6e59c4f"
+          },
+          "author": "tfpauly",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-02-14T04:05:47Z",
+          "updatedAt": "2022-02-14T04:06:36Z",
+          "comments": [
+            {
+              "originalPosition": 129,
+              "body": "`ffield` -> `field`",
+              "createdAt": "2022-02-14T04:05:47Z",
+              "updatedAt": "2022-02-14T04:06:36Z"
+            },
+            {
+              "originalPosition": 9,
+              "body": "Does the encapsulated request actually include a timestamp? The format doesn't seem to. If this is just referring to the fact that there should be a Date header, it seems misleading.",
+              "createdAt": "2022-02-14T04:06:34Z",
+              "updatedAt": "2022-02-14T04:06:36Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM40hSVG",
+          "commit": {
+            "abbreviatedOid": "6e59c4f"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-02-14T04:15:19Z",
+          "updatedAt": "2022-02-14T04:15:19Z",
+          "comments": [
+            {
+              "originalPosition": 9,
+              "body": "Editing error on my part; I missed this one when I cribbed from #88.",
+              "createdAt": "2022-02-14T04:15:19Z",
+              "updatedAt": "2022-02-14T04:15:19Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM40jez4",
+          "commit": {
+            "abbreviatedOid": "8137331"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "Thanks! This looks good overall to me. Only minor changes requested. ",
+          "createdAt": "2022-02-14T14:34:38Z",
+          "updatedAt": "2022-02-14T14:46:44Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "```suggestion\r\nThe Nenc parameter corresponding to the HpkeKdfId can be found in {{!HPKE, Section 7.1}}.\r\n```",
+              "createdAt": "2022-02-14T14:34:38Z",
+              "updatedAt": "2022-02-14T14:46:44Z"
+            },
+            {
+              "originalPosition": 60,
+              "body": "```suggestion\r\nother protocols reusing this encapsulation format, especially new versions of this protocol, can ensure key\r\n```",
+              "createdAt": "2022-02-14T14:35:35Z",
+              "updatedAt": "2022-02-14T14:46:44Z"
+            },
+            {
+              "originalPosition": 66,
+              "body": "```suggestion\r\nA server is responsible for either rejecting replayed requests or ensuring that\r\n```",
+              "createdAt": "2022-02-14T14:37:37Z",
+              "updatedAt": "2022-02-14T14:46:44Z"
+            },
+            {
+              "originalPosition": 64,
+              "body": "```suggestion\r\nlabel. See {{repurposing-the-encapsulation-format}} for more details.\r\n```",
+              "createdAt": "2022-02-14T14:38:39Z",
+              "updatedAt": "2022-02-14T14:46:44Z"
+            },
+            {
+              "originalPosition": 107,
+              "body": "```suggestion\r\nEven without replay prevention, the server-chosen `response_nonce` field\r\n```\r\n\r\nI'm not sure what \"strong\" vs \"weak\" replay prevention is, and I don't think we have a rigorous definition, so I'd just omit the adjective entirely.",
+              "createdAt": "2022-02-14T14:39:42Z",
+              "updatedAt": "2022-02-14T14:46:44Z"
+            },
+            {
+              "originalPosition": 116,
+              "body": "```suggestion\r\nClients SHOULD include a `Date` header field in encapsulated requests.  Though HTTP requests\r\n```",
+              "createdAt": "2022-02-14T14:40:04Z",
+              "updatedAt": "2022-02-14T14:46:44Z"
+            },
+            {
+              "originalPosition": 124,
+              "body": "```suggestion\r\nServers can identify duplicate requests using the encapsulation `enc` value.  The server can\r\n```",
+              "createdAt": "2022-02-14T14:40:50Z",
+              "updatedAt": "2022-02-14T14:46:45Z"
+            },
+            {
+              "originalPosition": 123,
+              "body": "Is this sufficient? Let's say the server is currently in time window T, and a request with `enc=x` comes in. If this doesn't collide with another request in T, the server happily accepts it. Now the server moves to time window T+1, and the request with `enc=x` is replayed. This text suggests, to me, that the server would _accept_ it, when really it should reject it or ask to replay with an updated Date. ",
+              "createdAt": "2022-02-14T14:43:09Z",
+              "updatedAt": "2022-02-14T14:46:45Z"
+            },
+            {
+              "originalPosition": 123,
+              "body": "```suggestion\r\nis the same as one that was previously answered within that time window. The server can either \r\nreject all other requests outside of this time window, or by asking the client to retry its request\r\nwith an updated Date header. See {{Section 4 of !REQUEST-DATE}} for more details.\r\n```\r\n\r\nI realize this is said below, but I think I'd lift it here.",
+              "createdAt": "2022-02-14T14:46:14Z",
+              "updatedAt": "2022-02-14T14:46:45Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM40lkj2",
+          "commit": {
+            "abbreviatedOid": "8137331"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Thanks Chris,\r\n\r\nI've suggested some changes that tweak yours that I'll accept.",
+          "createdAt": "2022-02-14T22:32:24Z",
+          "updatedAt": "2022-02-14T22:44:52Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "```suggestion\r\nThe Nenc parameter corresponding to the HpkeKdfId can be found in {{Section 7.1 of !HPKE}}.\r\n```",
+              "createdAt": "2022-02-14T22:32:24Z",
+              "updatedAt": "2022-02-14T22:44:53Z"
+            },
+            {
+              "originalPosition": 60,
+              "body": "```suggestion\r\nprotocols that reuse this encapsulation format, especially new versions of this protocol, can ensure key\r\n```",
+              "createdAt": "2022-02-14T22:33:11Z",
+              "updatedAt": "2022-02-14T22:44:53Z"
+            },
+            {
+              "originalPosition": 64,
+              "body": "```suggestion\r\nlabel; see {{repurposing-the-encapsulation-format}}.\r\n```",
+              "createdAt": "2022-02-14T22:33:34Z",
+              "updatedAt": "2022-02-14T22:44:53Z"
+            },
+            {
+              "originalPosition": 123,
+              "body": "If the new request has a timestamp in the new time window, it can accept it as a new value.\r\n\r\nGenerally you want a sliding window for anti-replay, so that you have a window of W = (now() - X .. now() + Y) continuously.  Then, when a request comes in with t \\in W, you accept it if the enc value is unique.  You drop old values when t < now() - X. \r\n\r\nIn practice, this isn't very efficient and you need to quantize the time window a little bit.  The anti-replay I built for TLS 0-RTT uses just two time intervals.  A single window means that there are hard discontinuities that cause rejections for very small amounts of skew when you move from one window to the next.\r\n\r\nEither way, once you forget the old enc value, if you see the same enc value with a new value for t, it's a new request and you can accept it.",
+              "createdAt": "2022-02-14T22:42:16Z",
+              "updatedAt": "2022-02-14T22:44:53Z"
+            },
+            {
+              "originalPosition": 123,
+              "body": "```suggestion\r\nis the same as one that was previously answered within that time window.  Servers can reject\r\nrequests outside of this window and signal that clients might retry with a different `Date`\r\nheader field; see {{Section 4 of !REQUEST-DATE}}.\r\n```",
+              "createdAt": "2022-02-14T22:44:22Z",
+              "updatedAt": "2022-02-14T22:44:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM40luid",
+          "commit": {
+            "abbreviatedOid": "bc04314"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM after some reformatting. Thanks for the updates, @martinthomson!",
+          "createdAt": "2022-02-14T23:31:19Z",
+          "updatedAt": "2022-02-14T23:31:19Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 93,
+      "id": "PR_kwDOE6fLGM4yv4cj",
+      "title": "Key consistency informative reference",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/93",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #55.",
+      "createdAt": "2022-02-14T01:01:13Z",
+      "updatedAt": "2022-02-14T22:49:41Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "61eeb56a04f9538df7d83b863503856bc7e11d90",
+      "headRepository": "martinthomson/oblivious-http",
+      "headRefName": "consistency",
+      "headRefOid": "21c0c6ce6b99ad131ca306c86c61db63c5382599",
+      "closedAt": "2022-02-14T14:31:22Z",
+      "mergedAt": "2022-02-14T14:31:22Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "269126073dde769f8cfd3045e1b214e23eb11dd4"
+      },
+      "comments": [
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "What do we want to do with this draft? Should we dispatch it and find it a home?",
+          "createdAt": "2022-02-14T14:31:17Z",
+          "updatedAt": "2022-02-14T14:31:17Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Good question.  I wonder if secdispatch would be a good place to ask.",
+          "createdAt": "2022-02-14T22:49:37Z",
+          "updatedAt": "2022-02-14T22:49:37Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 94,
+      "id": "PR_kwDOE6fLGM4y0UO_",
+      "title": "Add some more use cases",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/94",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "For #79 and @npdoty.",
+      "createdAt": "2022-02-14T22:05:10Z",
+      "updatedAt": "2022-02-14T22:55:11Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "269126073dde769f8cfd3045e1b214e23eb11dd4",
+      "headRepository": "martinthomson/oblivious-http",
+      "headRefName": "more-examples",
+      "headRefOid": "4239c7d57879adbe517e9c1ed331f7654cc13e03",
+      "closedAt": "2022-02-14T22:05:15Z",
+      "mergedAt": "2022-02-14T22:05:15Z",
+      "mergedBy": "martinthomson",
+      "mergeCommit": {
+        "oid": "d02d020522b07a5f77dd7d70ce0fbea4b705426e"
+      },
+      "comments": [
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "\ud83c\udf89",
+          "createdAt": "2022-02-14T22:55:11Z",
+          "updatedAt": "2022-02-14T22:55:11Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 95,
+      "id": "PR_kwDOE6fLGM4y0hNm",
+      "title": "Elaborate on the fixed mapping between proxy and request resources",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/95",
+      "state": "MERGED",
+      "author": "chris-wood",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This makes the choice of a 1:1 mapping clear: avoid being used as an open proxy through explicit configuration of your ACLs.\r\n\r\nCloses #77.\r\nCloses #60.\r\n\r\ncc @tfpauly ",
+      "createdAt": "2022-02-14T23:16:45Z",
+      "updatedAt": "2022-02-14T23:45:41Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "d02d020522b07a5f77dd7d70ce0fbea4b705426e",
+      "headRepository": "ietf-wg-ohai/oblivious-http",
+      "headRefName": "caw/proxy-state",
+      "headRefOid": "078cfc9d6df1fe258078e9d275c40b3b942a9a7f",
+      "closedAt": "2022-02-14T23:45:40Z",
+      "mergedAt": "2022-02-14T23:45:40Z",
+      "mergedBy": "martinthomson",
+      "mergeCommit": {
+        "oid": "8b0b6b19342271eafa3328d21386abc2534b9189"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOE6fLGM40luoc",
+          "commit": {
+            "abbreviatedOid": "ef22bb6"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Thanks for putting this together.  I've a slight recasting of the new text that I think might help.",
+          "createdAt": "2022-02-14T23:32:00Z",
+          "updatedAt": "2022-02-14T23:36:13Z",
+          "comments": [
+            {
+              "originalPosition": 36,
+              "body": "\"Oblivious Proxy\" isn't really a concept we use.\r\n\r\n```suggestion\r\nIt is possible for a server to be configured with multiple Oblivious\r\n```",
+              "createdAt": "2022-02-14T23:32:01Z",
+              "updatedAt": "2022-02-14T23:36:13Z"
+            },
+            {
+              "originalPosition": 29,
+              "body": "```suggestion\r\nThis protocol assumes a fixed, one-to-one mapping between the Oblivious Proxy Resource and \r\nthe Oblivious Request Resource. This means that any encapsulated request sent to the Oblivious\r\n```",
+              "createdAt": "2022-02-14T23:32:47Z",
+              "updatedAt": "2022-02-14T23:36:13Z"
+            },
+            {
+              "originalPosition": 39,
+              "body": "This isn't strictly true as https://proxy.example/forward/example.com/foo -> https://example.com/foo and https://proxy.example/forward/example.com/bar -> https://example.com/bar demonstrates that you can embed all the necessary state in the URI.  Those are different proxy resources, but there is no additional state.\r\n\r\n```suggestion\r\n```",
+              "createdAt": "2022-02-14T23:34:40Z",
+              "updatedAt": "2022-02-14T23:36:13Z"
+            },
+            {
+              "originalPosition": 26,
+              "body": "```suggestion\r\n## Resource Mappings {#proxy-state}\r\n```\r\n\r\nYou might also change the anchor name to \"mappings\" or something to match.",
+              "createdAt": "2022-02-14T23:34:59Z",
+              "updatedAt": "2022-02-14T23:36:13Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM40lvda",
+          "commit": {
+            "abbreviatedOid": "ef22bb6"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-02-14T23:37:47Z",
+          "updatedAt": "2022-02-14T23:37:48Z",
+          "comments": [
+            {
+              "originalPosition": 36,
+              "body": "We use it on and off. I'll remove other references to it in the doc.",
+              "createdAt": "2022-02-14T23:37:48Z",
+              "updatedAt": "2022-02-14T23:37:48Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM40lvo-",
+          "commit": {
+            "abbreviatedOid": "d87933b"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-02-14T23:39:12Z",
+          "updatedAt": "2022-02-14T23:39:13Z",
+          "comments": [
+            {
+              "originalPosition": 39,
+              "body": "Fair, yeah. Do we want to use this as an example configuration? ",
+              "createdAt": "2022-02-14T23:39:13Z",
+              "updatedAt": "2022-02-14T23:39:13Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM40lwO1",
+          "commit": {
+            "abbreviatedOid": "d87933b"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-02-14T23:43:40Z",
+          "updatedAt": "2022-02-14T23:43:40Z",
+          "comments": [
+            {
+              "originalPosition": 39,
+              "body": "Probably better to use https://proxy.example/opr/a -> https://example.com/orr/foo instead or something like that.\r\n\r\nNo point telling people how to circumvent the 1:1 mapping so directly.",
+              "createdAt": "2022-02-14T23:43:40Z",
+              "updatedAt": "2022-02-14T23:43:40Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM40lwW5",
+          "commit": {
+            "abbreviatedOid": "d87933b"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-02-14T23:44:36Z",
+          "updatedAt": "2022-02-14T23:44:36Z",
+          "comments": [
+            {
+              "originalPosition": 39,
+              "body": "Let's just omit the example for now then. We can add one later if folks think it's useful.",
+              "createdAt": "2022-02-14T23:44:36Z",
+              "updatedAt": "2022-02-14T23:44:36Z"
+            }
+          ]
         }
       ]
     }
