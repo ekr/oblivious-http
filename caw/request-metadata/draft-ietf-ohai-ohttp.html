@@ -1020,7 +1020,7 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Thomson &amp; Wood</td>
-<td class="center">Expires 12 September 2022</td>
+<td class="center">Expires 15 September 2022</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1033,12 +1033,12 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 <dd class="internet-draft">draft-ietf-ohai-ohttp-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-03-11" class="published">11 March 2022</time>
+<time datetime="2022-03-14" class="published">14 March 2022</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2022-09-12">12 September 2022</time></dd>
+<dd class="expires"><time datetime="2022-09-15">15 September 2022</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1094,7 +1094,7 @@ from the same client.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 12 September 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 15 September 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1954,10 +1954,10 @@ fields that are listed in the Connection header field.<a href="#section-6-1" cla
 <p id="section-6-2">The oblivious proxy resource interacts with the oblivious request resource by
 constructing a request using the same restrictions as the client request, except
 that the target URI is the oblivious request resource.  The content of this
-request is copied from the client.  The oblivious proxy resource SHOULD NOT add
-information about the client to this request, though some deployments or
-application use cases may warrant additional information; see
-<a href="#proxy-responsibilities" class="xref">Section 8.2</a> for more information.<a href="#section-6-2" class="pilcrow">¶</a></p>
+request is copied from the client.  The oblivious proxy resource MUST NOT
+add information about the client to this request without agreement from the
+client; exceptions to this requirement are discussed <a href="#proxy-responsibilities" class="xref">Section 8.2</a>
+for more information.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <p id="section-6-3">When a response is received from the oblivious request resource, the oblivious
 proxy resource forwards the response according to the rules of an HTTP proxy;
 see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-semantics-19#section-7.6" class="relref">Section 7.6</a> of [<a href="#HTTP" class="xref">HTTP</a>]</span>.<a href="#section-6-3" class="pilcrow">¶</a></p>
@@ -2349,35 +2349,22 @@ follow the forwarding rules in <span><a href="https://datatracker.ietf.org/doc/h
 examine the content of a request (other than to observe the choice of key
 identifier, KDF, and AEAD), so it is also assumed that it cannot generate an
 encapsulated response.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
-<p id="section-8.2-3">A proxy SHOULD NOT add information about the client identity when forwarding
-requests. For example, including the Via field, the Forwarded field
+<p id="section-8.2-3">A proxy MUST NOT reveal information about the client identity when forwarding
+requests without agreement from the client, with one exception (described
+below). For example, including the Via field, the Forwarded field
 <span>[<a href="#FORWARDED" class="xref">FORWARDED</a>]</span>, or similar information may reveal information about the
-client that the proxy is intended to hide from the target.  In general, a client
+client that the proxy is intended to hide from the target. In general, a client
 does not depend on the proxy using an authenticated and encrypted connection to
 the oblivious request resource, only that information about the client not be
-attached to forwarded requests. However, some applications or use cases can
-benefit additional client metadata attached to forwarded request. Some example
-HTTP headers that the proxy might include are as follows:<a href="#section-8.2-3" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-8.2-4.1">Flag indicating whether or not the client is deemed malicious. If a client
-request orignates from an abusive or otherwise harmful IP address with a bad
-reputation, the proxy might attached a flag indicating this to the target. The
-target could use this flag to shadowban clients or other alter whether how
-the client encapuslated request is processed.<a href="#section-8.2-4.1" class="pilcrow">¶</a>
-</li>
-          <li class="normal" id="section-8.2-4.2">Convey coarse geographic information about the client. Some applications, such
-as telemetry, may benefit from approximate geographic information about a
-client request. Clients could of course provide such information in their
-encapsulated request, but proxies ultimately have a more authoritative view
-of the client request origin and its geographic location by virtue of being
-on path between the client and target. As such, for these applications, it
-would be reasonable for proxies to supply coarse geographic information about
-individual client requests.<a href="#section-8.2-4.2" class="pilcrow">¶</a>
-</li>
-        </ul>
-<p id="section-8.2-5">Servers that enter into an agreement with a proxy are expected to agree upon the
-types of client metadata that proxies provide, if any. Clients need to consider
-this information when choosing a proxy discovery method.<a href="#section-8.2-5" class="pilcrow">¶</a></p>
+attached to forwarded requests.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
+<p id="section-8.2-4">The only exception to this requirement is that a proxy MAY add at most a single
+bit of information to each forwarded client request without the client's agreement.
+This bit may be used to indicate if the request request originated from an abusive
+or otherwise harmful IP address with a bad reputation. the proxy might attached a
+flag indicating this to the target. The target could use this flag to shadowban
+clients or other alter whether how the client encapuslated request is processed.
+Clients SHOULD take this into consideration when evaluating the fingerprinting
+surface of any encapsulated request.<a href="#section-8.2-4" class="pilcrow">¶</a></p>
 <div id="dos">
 <section id="section-8.2.1">
           <h4 id="name-denial-of-service">
