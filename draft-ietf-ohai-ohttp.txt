@@ -5,8 +5,8 @@
 Oblivious HTTP Application Intermediation                     M. Thomson
 Internet-Draft                                                   Mozilla
 Intended status: Standards Track                              C. A. Wood
-Expires: 10 September 2022                                    Cloudflare
-                                                            9 March 2022
+Expires: 15 September 2022                                    Cloudflare
+                                                           14 March 2022
 
 
                              Oblivious HTTP
@@ -51,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 September 2022.
+   This Internet-Draft will expire on 15 September 2022.
 
 Copyright Notice
 
@@ -444,12 +444,11 @@ Table of Contents
 
                     Figure 3: Plaintext Request Content
 
-   An Encapsulated Request is comprised of a length-prefixed key
-   identifier and a HPKE-protected request message.  HPKE protection
-   includes an encapsulated KEM shared secret (or enc), plus the AEAD-
-   protected request message.  An Encapsulated Request is shown in
-   Figure 4.  Section 5.1 describes the process for constructing and
-   processing an Encapsulated Request.
+   An Encapsulated Request is comprised of a key identifier and a HPKE-
+   protected request message.  HPKE protection includes an encapsulated
+   KEM shared secret (or enc), plus the AEAD-protected request message.
+   An Encapsulated Request is shown in Figure 4.  Section 5.1 describes
+   the process for constructing and processing an Encapsulated Request.
 
    Encapsulated Request {
      Key Identifier (8),
