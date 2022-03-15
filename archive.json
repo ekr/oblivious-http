@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-03-13T00:25:42.639007+00:00",
+  "timestamp": "2022-03-15T00:28:47.412916+00:00",
   "repo": "ietf-wg-ohai/oblivious-http",
   "labels": [
     {
@@ -1024,7 +1024,7 @@
       ],
       "body": "The current design allows just a single message in each direction.  This is fine for a range of use cases, but it falls short of achieving the full range of things that HTTP normally allows.  We might consider making the encapsulation of messages more generic to support this.  This requires a length delineation so that individual pieces can be managed, a means of updating nonces (primarily for responses, we can just continue to use the same HPKE context for requests), plus some means of marking messages as incomplete (or complete) in order to prevent truncation attacks.\r\n\r\nA streaming design would allow for messages to be incrementally processed.  It would also allow 1xx status codes to be generated and sent independent of final status codes.\r\n\r\nThe cost of this is overhead (the length delimiter) and complexity (nonces, truncation).",
       "createdAt": "2021-10-25T23:39:03Z",
-      "updatedAt": "2022-03-12T23:10:47Z",
+      "updatedAt": "2022-03-14T02:04:42Z",
       "closedAt": null,
       "comments": [
         {
@@ -1061,6 +1061,20 @@
           "body": "The main thing concerning me is that the use cases I'm currently tracking and using this for are very specifically single-request/single-response models, and that assumption is baked into the analysis of what can be done with the protocol. For these use cases, having one peer try to send more messages for a single context would be something that I'd want to prohibit. At that point, I'd rather not have the code even support doing this for this media type, so that it's very easy and minimal to have a valid implementation of the protocol and ensure that it won't do something unexpected.\r\n\r\nAre we aware of any use case and adopter that currently wants more than the single request-response?",
           "createdAt": "2022-03-12T23:10:47Z",
           "updatedAt": "2022-03-12T23:10:47Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "body": "How would you get from streaming requests or responses to having multiple messages?  Those are very different things.\r\n\r\nMaybe we got ourselves confused, but the \"generic\" aspect here is really about being able to incrementally send the same message (though HTTP has this weird idea that 1xx responses are discrete messages, I'm ignoring that; those are just streamed).  Let me see if I can sketch something out...",
+          "createdAt": "2022-03-13T22:13:17Z",
+          "updatedAt": "2022-03-13T22:13:17Z"
+        },
+        {
+          "author": "tfpauly",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Ah if this is just about streaming messages, that\u2019s more understandable. I think I was thrown off by the original comment starting with \u201cThe current design allows just a single message in each direction.\u201d, and assuming it was trying to more requests and responses. I\u2019d be curious to see what the design would be. ",
+          "createdAt": "2022-03-14T02:04:42Z",
+          "updatedAt": "2022-03-14T02:04:42Z"
         }
       ]
     },
@@ -5630,18 +5644,26 @@
       "labels": [],
       "body": "This is a first cut at relaxing the restriction on proxy behavior here. I'm definitely open to alternate phrasings or different examples!\r\n\r\nCloses #66.",
       "createdAt": "2022-03-11T22:57:14Z",
-      "updatedAt": "2022-03-12T13:13:46Z",
+      "updatedAt": "2022-03-14T23:04:12Z",
       "baseRepository": "ietf-wg-ohai/oblivious-http",
       "baseRefName": "main",
       "baseRefOid": "86275c2c78575edf7ba7d6a94b4229ffef2a3ddc",
       "headRepository": "ietf-wg-ohai/oblivious-http",
       "headRefName": "caw/request-metadata",
-      "headRefOid": "1d229680f3179479165e95e5fb5838a4aa85d30e",
+      "headRefOid": "7d85e698f6bcec625d3346dc81854b5cbd49902c",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@tfpauly @martinthomson I refactored this text somewhat given the discussion above. Please have a look.",
+          "createdAt": "2022-03-14T16:35:56Z",
+          "updatedAt": "2022-03-14T16:35:56Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOE6fLGM42HwRi",
@@ -5674,8 +5696,431 @@
               "updatedAt": "2022-03-12T13:13:46Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42IibV",
+          "commit": {
+            "abbreviatedOid": "1d22968"
+          },
+          "author": "tfpauly",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T00:26:01Z",
+          "updatedAt": "2022-03-14T00:26:02Z",
+          "comments": [
+            {
+              "originalPosition": 49,
+              "body": "The approach we\u2019ve been taking is that the client is always the one to attach information in the encrypted payload to the next hop, which it may learn from the proxy, and reflect after deciding what it is OK sending. But generally it\u2019s not OK to let the proxy attach any information without the client\u2019s consent. The marker for \u201cbad client\u201d shadow bans seems to be the exception case?",
+              "createdAt": "2022-03-14T00:26:01Z",
+              "updatedAt": "2022-03-14T00:26:02Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42IjGO",
+          "commit": {
+            "abbreviatedOid": "1d22968"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T00:41:07Z",
+          "updatedAt": "2022-03-14T00:41:07Z",
+          "comments": [
+            {
+              "originalPosition": 49,
+              "body": "There are two types of info the proxy might attach: info that the client agrees to have attached, like geo or whatever, and info that the client does not have consent to attach. Certainly clients shouldn't use a proxy if it attaches known info they don't agree to. But they can't really do anything about the former. So maybe the best outcome is (1) here is that clients agree to known info that the proxy attaches, and (2) proxies MUST NOT attach more than a bit (or two or whatever is a reasonable upper bound) for info that the clients explicitly do not agree to?",
+              "createdAt": "2022-03-14T00:41:07Z",
+              "updatedAt": "2022-03-14T16:23:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42L4ca",
+          "commit": {
+            "abbreviatedOid": "1d22968"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T16:36:21Z",
+          "updatedAt": "2022-03-14T16:36:21Z",
+          "comments": [
+            {
+              "originalPosition": 9,
+              "body": "I reverted this to MUST NOT and carved out the exceptional case.",
+              "createdAt": "2022-03-14T16:36:21Z",
+              "updatedAt": "2022-03-14T16:36:22Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42L498",
+          "commit": {
+            "abbreviatedOid": "1d22968"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T16:37:51Z",
+          "updatedAt": "2022-03-14T16:37:52Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "The intent of the text was to give examples of things people might want to explicitly allow, not really to argue for the merits of any particular metadata. I'm OK removing this entirely and just saying that anything must be explicitly agreed upon, without listing examples. ",
+              "createdAt": "2022-03-14T16:37:52Z",
+              "updatedAt": "2022-03-14T16:37:52Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42L5FQ",
+          "commit": {
+            "abbreviatedOid": "1d22968"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T16:38:12Z",
+          "updatedAt": "2022-03-14T16:38:12Z",
+          "comments": [
+            {
+              "originalPosition": 49,
+              "body": "FWIW, I made this change.",
+              "createdAt": "2022-03-14T16:38:12Z",
+              "updatedAt": "2022-03-14T16:38:12Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42Mb0f",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "ShivanKaul",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T18:26:48Z",
+          "updatedAt": "2022-03-14T18:26:49Z",
+          "comments": [
+            {
+              "originalPosition": 32,
+              "body": "Hmm, I'm not convinced that this helps. I think if a proxy is interested in adding metadata to prevent fraud, then it would be unlikely that a single bit would suffice.",
+              "createdAt": "2022-03-14T18:26:48Z",
+              "updatedAt": "2022-03-14T18:27:00Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42McBR",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "ShivanKaul",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T18:27:31Z",
+          "updatedAt": "2022-03-14T18:27:31Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "I'm personally in favour of changing the \"MUST NOT add information about a client\" to a SHOULD NOT, and craft verbiage to outline that this is a bad idea for fingerprinting/loss of anonymity etc reasons - basically considerations that a proxy should take into account (apologies @chris-wood I know that's what you originally had in your first commit, didn't get a chance to weigh in until now)",
+              "createdAt": "2022-03-14T18:27:31Z",
+              "updatedAt": "2022-03-14T18:27:31Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42McQG",
+          "commit": {
+            "abbreviatedOid": "1d22968"
+          },
+          "author": "ShivanKaul",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T18:28:22Z",
+          "updatedAt": "2022-03-14T18:28:23Z",
+          "comments": [
+            {
+              "originalPosition": 9,
+              "body": "FWIW I preferred this version of this text.",
+              "createdAt": "2022-03-14T18:28:22Z",
+              "updatedAt": "2022-03-14T18:28:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42Mc8_",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T18:31:01Z",
+          "updatedAt": "2022-03-14T18:31:02Z",
+          "comments": [
+            {
+              "originalPosition": 32,
+              "body": "I propose we separate these two issues: (1) what information is the proxy allowed to attach (or not), and (2) for information it's allowed to attach, how much? I think we can reasonably address (1) in this PR, whereas (2) requires more analysis (or a lot more language). Would that work?",
+              "createdAt": "2022-03-14T18:31:01Z",
+              "updatedAt": "2022-03-14T18:31:02Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42Mc-o",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T18:31:07Z",
+          "updatedAt": "2022-03-14T18:31:08Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "No worries =) ",
+              "createdAt": "2022-03-14T18:31:08Z",
+              "updatedAt": "2022-03-14T18:31:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42MfTS",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "ShivanKaul",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T18:39:46Z",
+          "updatedAt": "2022-03-14T18:39:47Z",
+          "comments": [
+            {
+              "originalPosition": 32,
+              "body": "I'm okay with that split, but for (1), were you thinking specific use-cases within antifraud, or saying \"proxies should not attach metadata except for antifraud reasons because of XYZ loss of anonymity considerations\", or something else?",
+              "createdAt": "2022-03-14T18:39:46Z",
+              "updatedAt": "2022-03-14T18:42:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42MiMM",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T18:51:09Z",
+          "updatedAt": "2022-03-14T18:51:09Z",
+          "comments": [
+            {
+              "originalPosition": 32,
+              "body": "I don't think we (even outside of OHAI) have consensus on what is suitable for anti-abuse purposes, so this PR is mainly trying to set up the draft to have that discussion separately. In other words, this PR is just about saying proxies MUST NOT attach data the client hasn't agreed to being revealed, except for this single bit. We can then bike shed the number of bits separately. ",
+              "createdAt": "2022-03-14T18:51:09Z",
+              "updatedAt": "2022-03-14T18:51:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42Mp-6",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "ShivanKaul",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T19:21:57Z",
+          "updatedAt": "2022-03-14T19:21:58Z",
+          "comments": [
+            {
+              "originalPosition": 32,
+              "body": "I think exactly because of that lack of consensus the text should be a SHOULD! I'm also okay with saying \"MUST NOT except for anti-fraud purposes\" and then leaving how many bits that needs etc to a separate discussion, but IMO \"MUST NOT... except\" sounds a lot like SHOULD.",
+              "createdAt": "2022-03-14T19:21:57Z",
+              "updatedAt": "2022-03-14T19:21:58Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42Ms5i",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T19:33:32Z",
+          "updatedAt": "2022-03-14T19:33:33Z",
+          "comments": [
+            {
+              "originalPosition": 32,
+              "body": "\"MUST NOT except for anti-fraud purposes\" is basically what's written there now, is it not? ",
+              "createdAt": "2022-03-14T19:33:32Z",
+              "updatedAt": "2022-03-14T19:33:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42M4kH",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "ShivanKaul",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T20:20:10Z",
+          "updatedAt": "2022-03-14T20:20:10Z",
+          "comments": [
+            {
+              "originalPosition": 32,
+              "body": "Okay, I'm good with that framing in this PR if we exclude discussion about bits etc. I thought you were suggesting still including that when you said\r\n>In other words, this PR is just about saying proxies MUST NOT attach data the client hasn't agreed to being revealed, except for this single bit.",
+              "createdAt": "2022-03-14T20:20:10Z",
+              "updatedAt": "2022-03-14T20:20:10Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42M-bo",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T20:42:54Z",
+          "updatedAt": "2022-03-14T20:42:54Z",
+          "comments": [
+            {
+              "originalPosition": 32,
+              "body": "I think we're still not aligned :-) The purpose of this PR is to allocate just a single bit for shadowban or whatever. Future PRs can relax this constraint and allow more bits, subject to more analysis or whatever's needed. I don't think we should have text that says \"proxies MAY attach TBD bits [sort out details later].\" Does that clarify?",
+              "createdAt": "2022-03-14T20:42:54Z",
+              "updatedAt": "2022-03-14T20:42:54Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42Nb5z",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "ShivanKaul",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-14T23:04:12Z",
+          "updatedAt": "2022-03-14T23:04:12Z",
+          "comments": [
+            {
+              "originalPosition": 32,
+              "body": "Gotcha, I'm fine with that.",
+              "createdAt": "2022-03-14T23:04:12Z",
+              "updatedAt": "2022-03-14T23:04:12Z"
+            }
+          ]
         }
       ]
+    },
+    {
+      "number": 97,
+      "id": "PR_kwDOE6fLGM40XKLF",
+      "title": "The key identifier is not length-prefixed",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/97",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2022-03-13T22:18:11Z",
+      "updatedAt": "2022-03-14T13:53:33Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "86275c2c78575edf7ba7d6a94b4229ffef2a3ddc",
+      "headRepository": "ietf-wg-ohai/oblivious-http",
+      "headRefName": "not-length-prefixed",
+      "headRefOid": "cb8ec2f4c995de0ae3435b7e0673688017722870",
+      "closedAt": "2022-03-14T13:53:32Z",
+      "mergedAt": "2022-03-14T13:53:32Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "0a1f719af20988c284880aae6c48953dda88bf0e"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOE6fLGM42IiGc",
+          "commit": {
+            "abbreviatedOid": "cb8ec2f"
+          },
+          "author": "tfpauly",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Quite true. ",
+          "createdAt": "2022-03-14T00:18:15Z",
+          "updatedAt": "2022-03-14T00:18:15Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42K5Al",
+          "commit": {
+            "abbreviatedOid": "cb8ec2f"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-03-14T13:53:25Z",
+          "updatedAt": "2022-03-14T13:53:25Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 98,
+      "id": "PR_kwDOE6fLGM40XK_g",
+      "title": "Remove circle CI config",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/98",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2022-03-13T22:38:11Z",
+      "updatedAt": "2022-03-14T14:23:12Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "86275c2c78575edf7ba7d6a94b4229ffef2a3ddc",
+      "headRepository": "ietf-wg-ohai/oblivious-http",
+      "headRefName": "no-circle",
+      "headRefOid": "bc5dd3fd9a2d5a2ff3988751b71df8afb2ccf52c",
+      "closedAt": "2022-03-14T14:23:11Z",
+      "mergedAt": "2022-03-14T14:23:11Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "3188b08ba18eb4a6dad6e1f8ec822bd0c8bb8cd9"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
