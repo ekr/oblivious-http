@@ -5,8 +5,8 @@
 Oblivious HTTP Application Intermediation                     M. Thomson
 Internet-Draft                                                   Mozilla
 Intended status: Standards Track                              C. A. Wood
-Expires: 15 September 2022                                    Cloudflare
-                                                           14 March 2022
+Expires: 22 September 2022                                    Cloudflare
+                                                           21 March 2022
 
 
                              Oblivious HTTP
@@ -51,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 September 2022.
+   This Internet-Draft will expire on 22 September 2022.
 
 Copyright Notice
 
@@ -929,13 +929,13 @@ Table of Contents
    The only exception to this requirement is that a proxy MAY add at
    most a single bit of information to each forwarded client request
    without the client's agreement.  This bit may be used to indicate if
-   the request request originated from an abusive or otherwise harmful
-   IP address with a bad reputation. the proxy might attached a flag
-   indicating this to the target.  The target could use this flag to
-   shadowban clients or other alter whether how the client encapuslated
-   request is processed.  Clients SHOULD take this into consideration
-   when evaluating the fingerprinting surface of any encapsulated
-   request.
+   the request request originated from a source that is considered
+   abusive or otherwise has a bad reputation.  The proxy could attach a
+   flag indicating this to the target.  The target could use this flag
+   to shadowban clients or other alter whether how the client
+   encapuslated request is processed.  Clients SHOULD take this into
+   consideration when evaluating the fingerprinting surface of any
+   encapsulated request.
 
 8.2.1.  Denial of Service
 
