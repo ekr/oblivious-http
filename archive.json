@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-03-15T00:28:47.412916+00:00",
+  "timestamp": "2022-03-22T00:28:03.284474+00:00",
   "repo": "ietf-wg-ohai/oblivious-http",
   "labels": [
     {
@@ -1024,7 +1024,7 @@
       ],
       "body": "The current design allows just a single message in each direction.  This is fine for a range of use cases, but it falls short of achieving the full range of things that HTTP normally allows.  We might consider making the encapsulation of messages more generic to support this.  This requires a length delineation so that individual pieces can be managed, a means of updating nonces (primarily for responses, we can just continue to use the same HPKE context for requests), plus some means of marking messages as incomplete (or complete) in order to prevent truncation attacks.\r\n\r\nA streaming design would allow for messages to be incrementally processed.  It would also allow 1xx status codes to be generated and sent independent of final status codes.\r\n\r\nThe cost of this is overhead (the length delimiter) and complexity (nonces, truncation).",
       "createdAt": "2021-10-25T23:39:03Z",
-      "updatedAt": "2022-03-14T02:04:42Z",
+      "updatedAt": "2022-03-22T00:06:11Z",
       "closedAt": null,
       "comments": [
         {
@@ -1075,6 +1075,13 @@
           "body": "Ah if this is just about streaming messages, that\u2019s more understandable. I think I was thrown off by the original comment starting with \u201cThe current design allows just a single message in each direction.\u201d, and assuming it was trying to more requests and responses. I\u2019d be curious to see what the design would be. ",
           "createdAt": "2022-03-14T02:04:42Z",
           "updatedAt": "2022-03-14T02:04:42Z"
+        },
+        {
+          "author": "mnot",
+          "authorAssociation": "NONE",
+          "body": "My .02 -- If the cost is reasonable it's probably best to pay it now. If not, that's fine, but I'd ask that we be *very* careful with the messaging that this is some form of HTTP -- perhaps including the name.",
+          "createdAt": "2022-03-22T00:06:11Z",
+          "updatedAt": "2022-03-22T00:06:11Z"
         }
       ]
     },
@@ -5644,13 +5651,13 @@
       "labels": [],
       "body": "This is a first cut at relaxing the restriction on proxy behavior here. I'm definitely open to alternate phrasings or different examples!\r\n\r\nCloses #66.",
       "createdAt": "2022-03-11T22:57:14Z",
-      "updatedAt": "2022-03-14T23:04:12Z",
+      "updatedAt": "2022-03-21T15:32:10Z",
       "baseRepository": "ietf-wg-ohai/oblivious-http",
       "baseRefName": "main",
       "baseRefOid": "86275c2c78575edf7ba7d6a94b4229ffef2a3ddc",
       "headRepository": "ietf-wg-ohai/oblivious-http",
       "headRefName": "caw/request-metadata",
-      "headRefOid": "7d85e698f6bcec625d3346dc81854b5cbd49902c",
+      "headRefOid": "aba762fffe305e4c7f198b236ec174872f92cac8",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -6034,6 +6041,124 @@
               "body": "Gotcha, I'm fine with that.",
               "createdAt": "2022-03-14T23:04:12Z",
               "updatedAt": "2022-03-14T23:04:12Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42lyH7",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "I am coming to the view that some sort of standardized shadowban signal might be useful here.  There's a lot of context and information that we're leaning on here that lacks definition.",
+          "createdAt": "2022-03-21T14:53:30Z",
+          "updatedAt": "2022-03-21T14:57:29Z",
+          "comments": [
+            {
+              "originalPosition": 35,
+              "body": "IP addresses aren't harmful.  Maybe just \"or from a source that has a bad reputation\".",
+              "createdAt": "2022-03-21T14:53:30Z",
+              "updatedAt": "2022-03-21T14:57:29Z"
+            },
+            {
+              "originalPosition": 35,
+              "body": "```suggestion\r\nor otherwise harmful IP address with a bad reputation. The proxy could attach a\r\n```",
+              "createdAt": "2022-03-21T14:53:48Z",
+              "updatedAt": "2022-03-21T14:57:29Z"
+            },
+            {
+              "originalPosition": 36,
+              "body": "\"shadowban\" needs a definition.",
+              "createdAt": "2022-03-21T14:54:06Z",
+              "updatedAt": "2022-03-21T14:57:29Z"
+            },
+            {
+              "originalPosition": 39,
+              "body": "How they might do this is not obvious.  Presumably, this is another bit of fingerprinting information.  But this text presumes that there is some process that takes this bit as input.  I don't know what this might be input to.",
+              "createdAt": "2022-03-21T14:56:43Z",
+              "updatedAt": "2022-03-21T14:57:29Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42l8KY",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-21T15:19:02Z",
+          "updatedAt": "2022-03-21T15:19:02Z",
+          "comments": [
+            {
+              "originalPosition": 39,
+              "body": "To clarify, are you suggesting that we try and describe how clients implement incorporate this bit into anti-fingerprinting mechanisms? The intent of this sentence is to say, \"assume you leak one additional bit through the proxy -- adjust your anti-fingerprinting mechanisms accordingly.\" ",
+              "createdAt": "2022-03-21T15:19:02Z",
+              "updatedAt": "2022-03-21T15:19:02Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42l9kZ",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-21T15:21:58Z",
+          "updatedAt": "2022-03-21T15:21:59Z",
+          "comments": [
+            {
+              "originalPosition": 36,
+              "body": "Done.",
+              "createdAt": "2022-03-21T15:21:58Z",
+              "updatedAt": "2022-03-21T15:21:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42l_1W",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-21T15:27:17Z",
+          "updatedAt": "2022-03-21T15:27:17Z",
+          "comments": [
+            {
+              "originalPosition": 39,
+              "body": "I think that this presumes a lot: that the client have anti-fingerprinting designs as a start.\r\n\r\nJust saying that clients need to be aware that the proxy might divide their population into two using this bit is probably enough.  Attaching that information to a normative requirement is where this gets too shaky for me.",
+              "createdAt": "2022-03-21T15:27:17Z",
+              "updatedAt": "2022-03-21T15:27:18Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM42mBvx",
+          "commit": {
+            "abbreviatedOid": "7d85e69"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-03-21T15:32:09Z",
+          "updatedAt": "2022-03-21T15:32:10Z",
+          "comments": [
+            {
+              "originalPosition": 39,
+              "body": "Done (with slightly a different phrasing)!",
+              "createdAt": "2022-03-21T15:32:10Z",
+              "updatedAt": "2022-03-21T15:32:10Z"
             }
           ]
         }
